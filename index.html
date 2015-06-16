@@ -31,20 +31,33 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       var socket = io('/sarina');
-      $('.reaction').click(function(){
-        socket.emit('image reaction', $(this).attr("id"));
-        return false;
-      });
-      $('#request_image').click(function(){
-        socket.emit('request image', 'test123');
-        return false;
-      });
-      socket.on('image reaction', function(msg){
-        $('#messages').append($('<li>').text("User says "+msg));
-      });
-      socket.on('new image', function(img){
-        $('#image img').attr("src", img.image);
-      });
+      function get_user(callback) {
+        $.get('/api/users/me', function(user) {
+            callback(user);
+        });
+      }
+      get_user(hasUser);
+
+
+      function hasUser(user){
+        var user = user;
+        $('.reaction').click(function(){
+          var reaction = $(this).attr("id");
+          socket.emit('image reaction', {reaction: reaction, user: user.username});
+          return false;
+        });
+        $('#request_image').click(function(){
+          socket.emit('request image');
+          return false;
+        });
+        // fix me later, needs a lot more stability
+        socket.on('image reaction', function(msg){
+          $('#messages').append($('<li>').text(msg));
+        });
+        socket.on('new image', function(img){
+          $('#image img').attr("src", img.image);
+        });
+      }    
     </script>
   </body>
 </html>
