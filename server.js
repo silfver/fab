@@ -26,18 +26,16 @@ app.get('/api/users/me',
   function(req, res) {
     res.json({ id: req.user.id, username: req.user.username });
 });
+
 var nsp = io.of('/sarina')
 nsp.on('connection', function(socket){
   socket.on('image reaction', function(msg){
     nsp.emit('image reaction', msg);
   });
   socket.on('request image', function(msg) {
-  	console.log("test av image request!");
-    //fs.readFile(__dirname + '/images/image.jpg', function(err, buf){
-	//    socket.emit('new image', { image: true, buffer: buf.toString('base64')});
-  	//});
+	nsp.emit('new image', { image: "http://res.cloudinary.com/fab/image/upload/c_fill,h_0.55,w_1.0/v1434446554/internal_images/tumblr_nm4y21eqTj1u53c30o1_1280.jpg"});
   });
 });
 http.listen(process.env.PORT || 3000, function(){
-  console.log('listening on *:3000');
+  console.log('listening on process port');
 });

@@ -12,13 +12,15 @@
         width: 100%;
       }
       button { width: 32%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; width:100%; height:500px; background-image:url('http://placehold.it/600x800');background-size: 100%;}
+      #image img {width:100%;position:absolute;top:0;left:0;z-index:-10;}
+      #messages { list-style-type: none; margin: 0; padding: 0; width:100%; height:500px;}
       #messages li { padding: 5px 10px; opacity:0.8; background: #333; color: #fff;}
       #messages li:nth-child(odd) { background: #000; color: #fff;}
     </style>
   </head>
   <body>
     <ul id="messages"></ul>
+    <div id="image"><img src="http://placehold.it/600x800"></div>
     <button id="request_image">Request new image!</button>
     <div id="buttons">
       <button class="reaction" id="Fab">Fab!</button>
@@ -34,14 +36,14 @@
         return false;
       });
       $('#request_image').click(function(){
-        socker.emit('request image', "test123");
+        socket.emit('request image', 'test123');
         return false;
       });
       socket.on('image reaction', function(msg){
         $('#messages').append($('<li>').text("User says "+msg));
       });
       socket.on('new image', function(img){
-        //$('#messages').css("background-image": img.src);
+        $('#image img').attr("src", img.image);
       });
     </script>
   </body>
