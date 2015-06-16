@@ -1,9 +1,17 @@
 var app = require('express')();
+var passport = require('passport');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
+});
+
+// Stub for user authentication --> needs more thought
+app.get('/api/users/me',
+  passport.authenticate('basic', { session: false }),
+  function(req, res) {
+    res.json({ id: req.user.id, username: req.user.username });
 });
 
 io.on('connection', function(socket){

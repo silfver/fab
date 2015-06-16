@@ -7,7 +7,9 @@
     "test": "NODE_ENV=test mocha tests --reporter mocha-better-spec-reporter"
   },
   "dependencies": {
+    "cloudinary": "^1.2.1",
     "express": "^4.12.4",
+    "passport": "^0.2.2",
     "socket.io": "^1.3.5"
   }
 }
