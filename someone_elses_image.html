@@ -21,7 +21,7 @@
   <body>
     <h1>This is the view when someone has sent you an image</h1>
     <ul id="messages"></ul>
-    <div id="image"><img src="https://placehold.it/600x800"></div>
+    <div id="image"><img src="https://placehold.it/600x800"><div id="description"></div></div>
     <div id="buttons">
       <button class="reaction" id="Fab">Fab!</button>
       <button class="reaction" id="SuperFab">Superfab!</button>
@@ -31,6 +31,7 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       var socket = false;
+      var image_sender = false;
       function get_user(callback) {
         $.get('/api/users/me', function(user) {
             get_friends(user, function(friends) {
@@ -44,7 +45,7 @@
             callback(friends);
         });
       }
-      function hasUser(user, friends){
+      function has_user(user, friends){
         var user = user;
         $('h1').text("User "+user.username+" connected with friends "+friends);
         var socket = io('/fab');
@@ -60,12 +61,13 @@
         socket.on('image reaction', function(msg){
           $('#messages').append($('<li>').text(msg));
         });
-        socket.on('new image', function(img, user){
-          $('#image img').attr("src", img.image);
-          $('#image').append("Bild från "+user.username);
+        socket.on('new image', function(data){
+          image_sender = data.user;
+          $('#image img').attr("src", data.image);
+          $('#description').html("Bild från "+image.sender);
         });
       } 
-      get_user(hasUser);
+      get_user(has_user);
 
       
     </script>

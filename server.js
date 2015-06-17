@@ -18,7 +18,6 @@ cloudinary.config({
 	api_secret: cloudinary_vars.auth.split(':')[1]
 });
 
-var user = false;
 var nsp = io.of('/fab');
 
 
@@ -32,8 +31,17 @@ app.get('/myimage', function(req, res){
 });
 app.get('/api/friends', function(req, res){
 	var username = req.query.user;
-	res.send(JSON.stringify(users));
-	res.end('done!');
+	var my_friends = [];
+	if (username == 'sarina') {
+		my_friends = ['johan', 'anders'];
+	}
+	if (username == 'jc') {
+		my_friends = ['alex', 'anders'];
+	}
+	if (username == 'johan') {
+		my_friends = ['sarina', 'alex', 'anders'];
+	}
+	res.send(JSON.stringify(my_friends));
 });
 
 app.use(multer({ dest: './uploads/',
@@ -56,7 +64,7 @@ app.post('/api/photo', function(req,res){
 });
 
 app.get('/api/users/me', function(req, res) {
-	var user = createUser();
+	user = createUser();
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ username: user}));
 	
@@ -72,12 +80,14 @@ nsp.on('connection', function(socket){
     	console.log('joining room', room);
     	socket.join(room); 
     });
+	socket.on('uploaded image', function(user) { 
+    	console.log(user);
+    });
 });	
 // helper functions 
 // ----------------------
-function sendToCloudinary(file) {
+function sendToCloudinary(file, callback) {
 	cloudinary.uploader.upload('./uploads/'+file.name, function(result) { 
-		console.log(result);
 		sendImageToMyFriends(result);
 	});
 }
@@ -88,7 +98,7 @@ function createUser() {
 }
 
 function sendImageToMyFriends(image) {
-	nsp.emit('new image', {image: image.secure_url, user: user});
+	nsp.emit('new image', {image: image.secure_url});
 }
 
 http.listen(process.env.PORT || 3000, function(){

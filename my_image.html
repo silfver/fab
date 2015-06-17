@@ -49,33 +49,26 @@
             callback(friends);
         });
       }
-      function hasUser(user, friends){
+      function has_user(user, friends){
+        var socket = io('/fab');
         var user = user;
         $('h1').text("User "+user.username+" connected with friends "+friends);
-        var socket = io('/fab');
-        // fix me later, needs a lot more stability
         socket.on('image reaction', function(msg){
           $('#messages').append($('<li>').text(msg));
         });
         socket.on('new image', function(img, user){
           $('#image img').attr("src", img.image);
         });
-      }    
-      get_user(hasUser);
-      $('#fileupload').fileupload({
+        $('#fileupload').fileupload({
           url: url,
           dataType: 'json',
           done: function (e, data) {
-          },
-          progressall: function (e, data) {
-              var progress = parseInt(data.loaded / data.total * 100, 10);
-              $('#progress .progress-bar').css(
-                  'width',
-                  progress + '%'
-              );
-          }
-      }).prop('disabled', !$.support.fileInput)
+            socket.emit('uploaded image',{user: user});
+          }, 
+        }).prop('disabled', !$.support.fileInput)
           .parent().addClass($.support.fileInput ? undefined : 'disabled');
+        }    
+      get_user(has_user);
     </script>
   </body>
 </html> 
