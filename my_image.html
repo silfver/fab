@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Fab!</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,12 +38,20 @@
 
       function get_user(callback) {
         $.get('/api/users/me', function(user) {
-            callback(user);
+            get_friends(user, function(friends) {
+              callback(user, friends);
+            });
         });
       }
-      function hasUser(user){
+      function get_friends(user, callback) {
+        $.get('/api/friends/', {user: user.username}, function(friends) {
+            var friends = JSON.parse(friends);
+            callback(friends);
+        });
+      }
+      function hasUser(user, friends){
         var user = user;
-        $('h1').text("User "+user.username+" connected");
+        $('h1').text("User "+user.username+" connected with friends "+friends);
         var socket = io('/fab');
         // fix me later, needs a lot more stability
         socket.on('image reaction', function(msg){

@@ -27,6 +27,11 @@ app.get('/', function(req, res){
 app.get('/myimage', function(req, res){
 	res.sendFile(__dirname + '/my_image.html');
 });
+app.get('/api/friends', function(req, res){
+	var username = req.query.user;
+	res.send(JSON.stringify(users));
+	res.end('done!');
+});
 
 app.use(multer({ dest: './uploads/',
 	rename: function (fieldname, filename) {
