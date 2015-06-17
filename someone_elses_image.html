@@ -12,7 +12,6 @@
         width: 100%;
       }
       button { width: 32%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #request_image {position: fixed; bottom:100px;}
       #image img {width:100%;position:absolute;top:0;left:0;z-index:-10;}
       #messages { list-style-type: none; margin: 0; padding: 0; width:100%; height:500px;}
       #messages li { padding: 5px 10px; opacity:0.8; background: #333; color: #fff;}
@@ -23,7 +22,6 @@
     <h1>This is the view when someone has sent you an image</h1>
     <ul id="messages"></ul>
     <div id="image"><img src="https://placehold.it/600x800"></div>
-    <button id="request_image">Request new image!</button>
     <div id="buttons">
       <button class="reaction" id="Fab">Fab!</button>
       <button class="reaction" id="SuperFab">Superfab!</button>
@@ -32,7 +30,7 @@
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-      var socket = io('/sarina');
+      var socket = false;
       function get_user(callback) {
         $.get('/api/users/me', function(user) {
             callback(user);
@@ -40,21 +38,20 @@
       }
       function hasUser(user){
         var user = user;
+        $('h1').text("User "+user.username+" connected");
+        var socket = io('/'+user.username);
         $('.reaction').click(function(){
           var reaction = $(this).attr("id");
           socket.emit('image reaction', {reaction: reaction, user: user.username});
-          return false;
-        });
-        $('#request_image').click(function(){
-          socket.emit('request image');
           return false;
         });
         // fix me later, needs a lot more stability
         socket.on('image reaction', function(msg){
           $('#messages').append($('<li>').text(msg));
         });
-        socket.on('new image', function(img){
+        socket.on('new image', function(img, user){
           $('#image img').attr("src", img.image);
+          $('#image').append("Bild från "+user.username);
         });
       } 
       get_user(hasUser);

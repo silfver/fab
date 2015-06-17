@@ -34,7 +34,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload.min.js"></script>
 
     <script>
-      var socket = io('/sarina');
       var url = '/api/photo';
 
       function get_user(callback) {
@@ -44,16 +43,13 @@
       }
       function hasUser(user){
         var user = user;
-        $('.reaction').click(function(){
-          var reaction = $(this).attr("id");
-          socket.emit('image reaction', {reaction: reaction, user: user.username});
-          return false;
-        });
+        $('h1').text("User "+user.username+" connected");
+        var socket = io('/'+user.username);
         // fix me later, needs a lot more stability
         socket.on('image reaction', function(msg){
           $('#messages').append($('<li>').text(msg));
         });
-        socket.on('new image', function(img){
+        socket.on('new image', function(img, user){
           $('#image img').attr("src", img.image);
         });
       }    
@@ -62,7 +58,6 @@
           url: url,
           dataType: 'json',
           done: function (e, data) {
-
           },
           progressall: function (e, data) {
               var progress = parseInt(data.loaded / data.total * 100, 10);
