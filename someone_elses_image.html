@@ -39,7 +39,7 @@
       function hasUser(user){
         var user = user;
         $('h1').text("User "+user.username+" connected");
-        var socket = io('/'+user.username);
+        var socket = io('/fab');
         $('.reaction').click(function(){
           var reaction = $(this).attr("id");
           socket.emit('image reaction', {reaction: reaction, user: user.username});
