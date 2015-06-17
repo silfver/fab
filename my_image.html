@@ -18,16 +18,25 @@
       #messages li { padding: 5px 10px; opacity:0.8; background: #333; color: #fff;}
       #messages li:nth-child(odd) { background: #000; color: #fff;}
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/css/jquery.fileupload.css">
   </head>
   <body>
     <h1>This is the view when you have sent an image to someone</h1>
     <ul id="messages"></ul>
     <div id="image"><img src="http://placehold.it/600x800"></div>
-    <button id="request_image">Take a picture!</button>
+      <input id="fileupload" type="file" name="files[]" multiple>
+      <div id="progress" class="progress">
+      <div class="progress-bar progress-bar-success"></div>
+    </div>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload.min.js"></script>
+
     <script>
       var socket = io('/sarina');
+      var url = '/api/photo';
+
       function get_user(callback) {
         $.get('/api/users/me', function(user) {
             callback(user);
@@ -40,10 +49,6 @@
           socket.emit('image reaction', {reaction: reaction, user: user.username});
           return false;
         });
-        $('#request_image').click(function(){
-          socket.emit('request image');
-          return false;
-        });
         // fix me later, needs a lot more stability
         socket.on('image reaction', function(msg){
           $('#messages').append($('<li>').text(msg));
@@ -53,8 +58,21 @@
         });
       }    
       get_user(hasUser);
+      $('#fileupload').fileupload({
+          url: url,
+          dataType: 'json',
+          done: function (e, data) {
 
-      
+          },
+          progressall: function (e, data) {
+              var progress = parseInt(data.loaded / data.total * 100, 10);
+              $('#progress .progress-bar').css(
+                  'width',
+                  progress + '%'
+              );
+          }
+      }).prop('disabled', !$.support.fileInput)
+          .parent().addClass($.support.fileInput ? undefined : 'disabled');
     </script>
   </body>
 </html> 
