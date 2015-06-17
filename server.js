@@ -19,7 +19,7 @@ cloudinary.config({
 });
 
 var nsp = io.of('/fab');
-
+var filename = false;
 
 // REST API
 // ----------------------
@@ -49,17 +49,21 @@ app.use(multer({ dest: './uploads/',
 		return filename+Date.now();
 	},
 	onFileUploadStart: function (file) {
-		console.log(file.originalname + ' is starting ...')
 	},
 	onFileUploadComplete: function (file) {
-		sendToCloudinary(file);
+		filename = file.name;
 		done=true;
 	}
 }));
 
 app.post('/api/photo', function(req,res){
 	if(done==true){
-    	res.end("File uploaded.");
+		var user = req.body.user;
+		console.log(filename);
+
+		sendToCloudinary(filename, user);
+
+    	res.send('all done');
   	}
 });
 
@@ -86,9 +90,9 @@ nsp.on('connection', function(socket){
 });	
 // helper functions 
 // ----------------------
-function sendToCloudinary(file, callback) {
-	cloudinary.uploader.upload('./uploads/'+file.name, function(result) { 
-		sendImageToMyFriends(result);
+function sendToCloudinary(file, user) {
+	cloudinary.uploader.upload('./uploads/'+file, function(result) { 
+		sendImageToMyFriends(result, user);
 	});
 }
 
@@ -97,8 +101,8 @@ function createUser() {
 	return user;
 }
 
-function sendImageToMyFriends(image) {
-	nsp.emit('new image', {image: image.secure_url});
+function sendImageToMyFriends(image, user) {
+	nsp.emit('new image', {image: image.secure_url, user: user});
 }
 
 http.listen(process.env.PORT || 3000, function(){

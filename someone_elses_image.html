@@ -64,7 +64,7 @@
         socket.on('new image', function(data){
           image_sender = data.user;
           $('#image img').attr("src", data.image);
-          $('#description').html("Bild från "+image.sender);
+          $('#description').html("Bild från "+image_sender);
         });
       } 
       get_user(has_user);

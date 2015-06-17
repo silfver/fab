@@ -60,13 +60,12 @@
           $('#image img').attr("src", img.image);
         });
         $('#fileupload').fileupload({
+          formData: {user: user.username},
           url: url,
           dataType: 'json',
-          done: function (e, data) {
-            socket.emit('uploaded image',{user: user});
-          }, 
-        }).prop('disabled', !$.support.fileInput)
-          .parent().addClass($.support.fileInput ? undefined : 'disabled');
+          inprogress: function (e, data) {
+          },
+        })
         }    
       get_user(has_user);
     </script>
