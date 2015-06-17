@@ -16,7 +16,10 @@ cloudinary.config({
 
 
 app.get('/', function(req, res){
-	res.sendFile(__dirname + '/index.html');
+	res.sendFile(__dirname + '/someone_elses_image.html');
+});
+app.get('/myimage', function(req, res){
+	res.sendFile(__dirname + '/my_image.html');
 });
 
 
