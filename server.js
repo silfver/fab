@@ -21,6 +21,9 @@ cloudinary.config({
 var user = false;
 var nsp = io.of('/fab');
 
+
+// REST API
+// ----------------------
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/someone_elses_image.html');
 });
@@ -52,13 +55,6 @@ app.post('/api/photo', function(req,res){
   	}
 });
 
-function sendToCloudinary(file) {
-	cloudinary.uploader.upload('./uploads/'+file.name, function(result) { 
-		console.log(result);
-		sendImageToMyFriends(result);
-	});
-}
-// Stub for user authentication --> needs more thought
 app.get('/api/users/me', function(req, res) {
 	var user = createUser();
     res.setHeader('Content-Type', 'application/json');
@@ -66,11 +62,26 @@ app.get('/api/users/me', function(req, res) {
 	
 });
 
+// Socket.io stuff
+// ----------------------
 nsp.on('connection', function(socket){
-		socket.on('image reaction', function(msg){
-			nsp.emit('image reaction', msg.user + " sa "+msg.reaction);
-		});
+	socket.on('image reaction', function(msg){
+		nsp.emit('image reaction', msg.user + " sa "+msg.reaction);
+	});
+	socket.on('subscribe', function(room) { 
+    	console.log('joining room', room);
+    	socket.join(room); 
+    });
 });	
+// helper functions 
+// ----------------------
+function sendToCloudinary(file) {
+	cloudinary.uploader.upload('./uploads/'+file.name, function(result) { 
+		console.log(result);
+		sendImageToMyFriends(result);
+	});
+}
+
 function createUser() {
 	user = users[Math.floor(Math.random()*users.length)];
 	return user;

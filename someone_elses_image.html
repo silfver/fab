@@ -48,6 +48,9 @@
         var user = user;
         $('h1').text("User "+user.username+" connected with friends "+friends);
         var socket = io('/fab');
+        for (var i in friends) {
+          socket.emit('subscribe', {room: friends[i]});
+        }
         $('.reaction').click(function(){
           var reaction = $(this).attr("id");
           socket.emit('image reaction', {reaction: reaction, user: user.username});
