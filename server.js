@@ -59,10 +59,7 @@ app.use(multer({ dest: './uploads/',
 app.post('/api/photo', function(req,res){
 	if(done==true){
 		var user = req.body.user;
-		console.log(filename);
-
 		sendToCloudinary(filename, user);
-
     	res.send('all done');
   	}
 });
@@ -78,7 +75,7 @@ app.get('/api/users/me', function(req, res) {
 // ----------------------
 nsp.on('connection', function(socket){
 	socket.on('image reaction', function(msg){
-		nsp.emit('image reaction', msg.user + " sa "+msg.reaction);
+		nsp.to(msg.image_sender).emit('image reaction', msg.user + " sa "+msg.reaction);
 	});
 	socket.on('subscribe', function(room) { 
     	console.log('joining room', room);
@@ -102,6 +99,7 @@ function createUser() {
 }
 
 function sendImageToMyFriends(image, user) {
+	console.log("sending to "+user)
 	nsp.emit('new image', {image: image.secure_url, user: user});
 }
 

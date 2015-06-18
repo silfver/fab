@@ -30,44 +30,44 @@
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
-      var socket = false;
-      var image_sender = false;
-      function get_user(callback) {
+        var socket = false;
+        var image_sender = false;
+        function get_user(callback) {
         $.get('/api/users/me', function(user) {
             get_friends(user, function(friends) {
-              callback(user, friends);
+                callback(user, friends);
             });
         });
-      }
-      function get_friends(user, callback) {
+        }
+        function get_friends(user, callback) {
         $.get('/api/friends/', {user: user.username}, function(friends) {
             var friends = JSON.parse(friends);
             callback(friends);
         });
-      }
-      function has_user(user, friends){
+        }
+        function has_user(user, friends){
         var user = user;
         $('h1').text("User "+user.username+" connected with friends "+friends);
         var socket = io('/fab');
         for (var i in friends) {
-          socket.emit('subscribe', {room: friends[i]});
+            socket.emit('subscribe', {room: friends[i]});
         }
         $('.reaction').click(function(){
-          var reaction = $(this).attr("id");
-          socket.emit('image reaction', {reaction: reaction, user: user.username});
-          return false;
+            var reaction = $(this).attr("id");
+            socket.emit('image reaction', {reaction: reaction, user: user.username, image_sender: image_sender});
+            return false;
         });
         // fix me later, needs a lot more stability
         socket.on('image reaction', function(msg){
-          $('#messages').append($('<li>').text(msg));
+            $('#messages').append($('<li>').text(msg));
         });
         socket.on('new image', function(data){
-          image_sender = data.user;
-          $('#image img').attr("src", data.image);
-          $('#description').html("Bild från "+image_sender);
+            image_sender = data.user;
+            $('#image img').attr("src", data.image);
+            $('#description').html("Bild från "+image_sender);
         });
-      } 
-      get_user(has_user);
+        } 
+        get_user(has_user);
 
       
     </script>

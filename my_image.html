@@ -39,7 +39,7 @@
       function get_user(callback) {
         $.get('/api/users/me', function(user) {
             get_friends(user, function(friends) {
-              callback(user, friends);
+                callback(user, friends);
             });
         });
       }
@@ -54,19 +54,19 @@
         var user = user;
         $('h1').text("User "+user.username+" connected with friends "+friends);
         socket.on('image reaction', function(msg){
-          $('#messages').append($('<li>').text(msg));
+            $('#messages').append($('<li>').text(msg));
         });
         socket.on('new image', function(img, user){
-          $('#image img').attr("src", img.image);
+            $('#image img').attr("src", img.image);
         });
         $('#fileupload').fileupload({
-          formData: {user: user.username},
-          url: url,
-          dataType: 'json',
-          inprogress: function (e, data) {
-          },
+            formData: {user: user.username},
+            url: url,
+            dataType: 'json',
+            inprogress: function (e, data) {
+            },
         })
-        }    
+      }    
       get_user(has_user);
     </script>
   </body>
