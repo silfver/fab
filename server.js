@@ -1,11 +1,15 @@
 require('dotenv').load();
 var app = require('express')();
+var express = require('express');
 var passport = require('passport');
+var path = require('path');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs'); 
 var url = require('url');
 var multer = require('multer');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
 var cloudinary = require('cloudinary');
 var users = ['sarina', 'johan', 'anders', 'jc', 'alex'];
 var done = false;
@@ -18,6 +22,20 @@ mongoose.connect(process.env.MONGOLAB_URI);
 app.use(expressSession({secret: 'process.env.EXPRESSECRETKEY'}));
 app.use(passport.initialize());
 app.use(passport.session());
+
+
+var flash = require('connect-flash');
+app.use(flash());
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 
 cloudinary.config({ 
     cloud_name: cloudinary_vars.hostname, 
@@ -39,9 +57,9 @@ var filename = false;
 
 // REST API
 // ----------------------
-app.get('/', function(req, res){
+/*app.get('/', function(req, res){
     res.sendFile(__dirname + '/someone_elses_image.html');
-});
+});*/
 app.get('/myimage', function(req, res){
     res.sendFile(__dirname + '/my_image.html');
 });
