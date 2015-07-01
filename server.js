@@ -105,20 +105,6 @@ app.get('/api/users/me', function(req, res) {
     
 });
 
-// Socket.io stuff
-// ----------------------
-nsp.on('connection', function(socket){
-    socket.on('image reaction', function(msg){
-        nsp.to(msg.image_sender).emit('image reaction', msg.user + " sa "+msg.reaction);
-    });
-    socket.on('subscribe', function(room) { 
-        console.log('joining room', room);
-        socket.join(room); 
-    });
-    socket.on('uploaded image', function(user) { 
-        console.log(user);
-    });
-}); 
 // helper functions 
 // ----------------------
 function sendToCloudinary(file, user) {
