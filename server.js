@@ -57,9 +57,9 @@ var filename = false;
 
 // REST API
 // ----------------------
-/*app.get('/', function(req, res){
+app.get('/someoneelse', function(req, res){
     res.sendFile(__dirname + '/someone_elses_image.html');
-});*/
+});
 app.get('/myimage', function(req, res){
     res.sendFile(__dirname + '/my_image.html');
 });
