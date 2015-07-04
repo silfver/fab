@@ -4,14 +4,10 @@ var express = require('express');
 var passport = require('passport');
 var path = require('path');
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var fs = require('fs'); 
 var url = require('url');
 var multer = require('multer');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cloudinary = require('cloudinary');
-var users = ['sarina', 'johan', 'anders', 'jc', 'alex'];
 var done = false;
 var mongoose = require('mongoose');
 var expressSession = require('express-session');
@@ -23,16 +19,8 @@ app.use(expressSession({secret: 'process.env.EXPRESSECRETKEY'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-var flash = require('connect-flash');
-app.use(flash());
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -50,19 +38,12 @@ initPassport(passport);
 var routes = require('./routes/index')(passport);
 app.use('/', routes);
 
-
-var nsp = io.of('/fab');
 var filename = false;
 
 
 // REST API
 // ----------------------
-app.get('/someoneelse', function(req, res){
-    res.sendFile(__dirname + '/someone_elses_image.html');
-});
-app.get('/myimage', function(req, res){
-    res.sendFile(__dirname + '/my_image.html');
-});
+
 app.get('/api/friends', function(req, res){
     var username = req.query.user;
     var my_friends = [];
@@ -90,16 +71,22 @@ app.use(multer({ dest: './uploads/',
     }
 }));
 
-app.post('/api/photo', function(req,res){
+app.post('/api/image/new', function(req,res){
     if(done==true){
         var user = req.body.user;
         sendToCloudinary(filename, user);
-        res.send('all done');
+        res.send('picture uploaded');
     }
 });
 
 app.get('/api/users/me', function(req, res) {
-    user = createUser();
+    user = {
+        username: 'johan',
+        firstName: 'johan',
+        lastName: 'Lim',
+        postal_no: 16847,
+        email: 'johan.lim@webassistant.se',
+    }
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ username: user}));
     
@@ -109,19 +96,17 @@ app.get('/api/users/me', function(req, res) {
 // ----------------------
 function sendToCloudinary(file, user) {
     cloudinary.uploader.upload('./uploads/'+file, function(result) { 
-        sendImageToMyFriends(result, user);
+        return (result, user);
     });
 }
 
 function createUser() {
+    // TODO create a user via passport
     user = users[Math.floor(Math.random()*users.length)];
     return user;
 }
 
-function sendImageToMyFriends(image, user) {
-    console.log("sending to "+user)
-    nsp.emit('new image', {image: image.secure_url, user: user});
-}
+
 
 http.listen(process.env.PORT || 3000, function(){
     console.log('listening on process port');
