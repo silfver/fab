@@ -5,19 +5,22 @@ var passport = require('passport');
 var path = require('path');
 var http = require('http').Server(app);
 var url = require('url');
-var multer = require('multer');
 var bodyParser = require('body-parser');
 var cloudinary = require('cloudinary');
 var done = false;
 var mongoose = require('mongoose');
 var expressSession = require('express-session');
 var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
+var User = require('./models/user');
+var userController = require('./controllers/user');
+var authController = require('./controllers/auth');
 
 mongoose.connect(process.env.MONGOLAB_URI);
 
+var router = express.Router();
+
 app.use(expressSession({secret: 'process.env.EXPRESSECRETKEY'}));
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
@@ -35,48 +38,51 @@ cloudinary.config({
 var initPassport = require('./passport/init');
 initPassport(passport);
 
-var routes = require('./routes/index')(passport);
-app.use('/', routes);
-
 var filename = false;
 
+router.route('/user/new')
+    .post(userController.createNewUser);
+
+router.route('/users')
+    .get(userController.getUsers);
 
 // REST API
 // ----------------------
 
-app.get('/api/friends', function(req, res){
+/*app.get('/api/friends', function(req, res){
     var username = req.query.user;
     var my_friends = [];
-    if (username == 'sarina') {
-        my_friends = ['johan', 'anders'];
-    }
-    if (username == 'jc') {
-        my_friends = ['alex', 'anders'];
-    }
-    if (username == 'johan') {
-        my_friends = ['sarina', 'alex', 'anders'];
-    }
-    res.send(JSON.stringify(my_friends));
+    User.findOne({ 'username' :  username }, 
+        function(err, user) {
+            // In case of any error, return using the done method
+            if (err)
+                return done(err);
+            // Username does not exist, log the error and redirect back            
+            // User and password both match, return user from done method
+            // which will be treated like success
+            res.send(JSON.stringify(user));
+        }
+    );
 });
 
-app.use(multer({ dest: './uploads/',
-    rename: function (fieldname, filename) {
-        return filename+Date.now();
-    },
-    onFileUploadStart: function (file) {
-    },
-    onFileUploadComplete: function (file) {
-        filename = file.name;
-        done=true;
-    }
-}));
+app.get('user', function(req, res){
+    var username = req.query.username;
+    User.findOne({ 'username' :  username }, 
+        function(err, user) {
+            // In case of any error, return using the done method
+            if (err)
+                return done(err);
+            // User and password both match, return user from done method
+            // which will be treated like success
+            res.send(JSON.stringify(user));
+        }
+    );
+});
+
 
 app.post('/api/image/new', function(req,res){
-    if(done==true){
-        var user = req.body.user;
-        sendToCloudinary(filename, user);
-        res.send('picture uploaded');
-    }
+    console.log(req);
+    res.send('picture uploaded');
 });
 
 app.get('/api/users/me', function(req, res) {
@@ -90,23 +96,9 @@ app.get('/api/users/me', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ username: user}));
     
-});
+});*/
 
-// helper functions 
-// ----------------------
-function sendToCloudinary(file, user) {
-    cloudinary.uploader.upload('./uploads/'+file, function(result) { 
-        return (result, user);
-    });
-}
-
-function createUser() {
-    // TODO create a user via passport
-    user = users[Math.floor(Math.random()*users.length)];
-    return user;
-}
-
-
+app.use('/api', router);
 
 http.listen(process.env.PORT || 3000, function(){
     console.log('listening on process port');
