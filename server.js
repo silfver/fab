@@ -37,10 +37,11 @@ router.route('/user/new')
     .post(userController.createNewUser);
 
 router.route('/users')
-    .get(userController.getUsers);
-
+    .get(authController.isAuthenticated, userController.getUsers);
+router.route('/user/me')
+    .get(authController.isAuthenticated, userController.getMe);
 router.route('/user/add_friend')
-    .put(userController.addFriendToUser);
+    .put(authController.isAuthenticated, userController.addFriendToUser);
 
 // REST API
 // ----------------------

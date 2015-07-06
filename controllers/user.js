@@ -17,12 +17,24 @@ exports.createNewUser = function(req, res) {
     res.json({ message: 'New user added' });
   });
 };
-
+exports.getMe = function(req, res) {
+  var userId = req.user._id;
+  console.log(userId);
+  User.findOne({_id: userId}, function(err, user) {
+    if (err)
+      res.send(err);
+    res.json(user);
+  })
+}
+// TODO fix ugly error handling
 exports.addFriendToUser = function(req, res) {
   var username = req.query.username;
   User.findOne({username: req.query.friend}, function(err, friend){
+    if (err)
+      res.send(err);
     User.findOne({username: username}, function(err, user) {
-      User.update({_id: user._id}, {$push: { friends: friend._id }})
+      if (err)
+        res.send(err);
       User.findByIdAndUpdate(
         user._id,
         {$push: {friends: friend._id}},
