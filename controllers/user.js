@@ -19,7 +19,6 @@ exports.createNewUser = function(req, res) {
 };
 exports.getMe = function(req, res) {
   var userId = req.user._id;
-  console.log(userId);
   User.findOne({_id: userId}, function(err, user) {
     if (err)
       res.send(err);
