@@ -42,7 +42,9 @@ router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
 router.route('/user/add_friend')
     .put(authController.isAuthenticated, userController.addFriendToUser);
-
+router.route('/users/search/:username')
+    .get(authController.isAuthenticated, userController.search);
+    
 // REST API
 // ----------------------
 

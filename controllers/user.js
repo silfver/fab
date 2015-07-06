@@ -25,7 +25,17 @@ exports.getMe = function(req, res) {
       res.send(err);
     res.json(user);
   })
+};
+exports.search = function(req, res) {
+  var partial_username = req.params.username;
+  var query = {username: new RegExp('^'+partial_username)};
+  User.find(query, function(err, user) {
+    if (err) 
+      res.send(err);
+    res.json(user);
+  });
 }
+
 // TODO fix ugly error handling
 exports.addFriendToUser = function(req, res) {
   var username = req.query.username;
