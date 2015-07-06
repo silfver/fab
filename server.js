@@ -22,10 +22,9 @@ var router = express.Router();
 app.use(expressSession({secret: 'process.env.EXPRESSECRETKEY'}));
 app.use(passport.initialize());
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
-app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 
 cloudinary.config({ 
@@ -34,17 +33,14 @@ cloudinary.config({
     api_secret: cloudinary_vars.auth.split(':')[1]
 });
 
-// Initialize Passport for user handling
-var initPassport = require('./passport/init');
-initPassport(passport);
-
-var filename = false;
-
 router.route('/user/new')
     .post(userController.createNewUser);
 
 router.route('/users')
     .get(userController.getUsers);
+
+router.route('/user/add_friend')
+    .put(userController.addFriendToUser);
 
 // REST API
 // ----------------------
