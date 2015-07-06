@@ -14,6 +14,7 @@ var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
 var User = require('./models/user');
 var userController = require('./controllers/user');
 var authController = require('./controllers/auth');
+var imageController = require('./controllers/image');
 
 mongoose.connect(process.env.MONGOLAB_URI);
 
@@ -26,7 +27,6 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
-
 cloudinary.config({ 
     cloud_name: cloudinary_vars.hostname, 
     api_key: cloudinary_vars.auth.split(':')[0], 
@@ -35,7 +35,6 @@ cloudinary.config({
 
 router.route('/user/new')
     .post(userController.createNewUser);
-
 router.route('/users')
     .get(authController.isAuthenticated, userController.getUsers);
 router.route('/user/me')
@@ -44,58 +43,12 @@ router.route('/user/add_friend')
     .put(authController.isAuthenticated, userController.addFriendToUser);
 router.route('/users/search/:username')
     .get(authController.isAuthenticated, userController.search);
-    
-// REST API
-// ----------------------
-
-/*app.get('/api/friends', function(req, res){
-    var username = req.query.user;
-    var my_friends = [];
-    User.findOne({ 'username' :  username }, 
-        function(err, user) {
-            // In case of any error, return using the done method
-            if (err)
-                return done(err);
-            // Username does not exist, log the error and redirect back            
-            // User and password both match, return user from done method
-            // which will be treated like success
-            res.send(JSON.stringify(user));
-        }
-    );
-});
-
-app.get('user', function(req, res){
-    var username = req.query.username;
-    User.findOne({ 'username' :  username }, 
-        function(err, user) {
-            // In case of any error, return using the done method
-            if (err)
-                return done(err);
-            // User and password both match, return user from done method
-            // which will be treated like success
-            res.send(JSON.stringify(user));
-        }
-    );
-});
-
-
-app.post('/api/image/new', function(req,res){
-    console.log(req);
-    res.send('picture uploaded');
-});
-
-app.get('/api/users/me', function(req, res) {
-    user = {
-        username: 'johan',
-        firstName: 'johan',
-        lastName: 'Lim',
-        postal_no: 16847,
-        email: 'johan.lim@webassistant.se',
-    }
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ username: user}));
-    
-});*/
+router.route('/image/register')
+    .post(authController.isAuthenticated, imageController.register);
+router.route('/image/:id')
+    .get(authController.isAuthenticated, imageController.get);
+router.route('/images')
+    .get(authController.isAuthenticated, imageController.getAll);
 
 app.use('/api', router);
 

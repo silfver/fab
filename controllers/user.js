@@ -3,13 +3,14 @@ var User = require('../models/user');
 
 // Create endpoint /api/users for POST
 exports.createNewUser = function(req, res) {
+  console.log(req.body);
   var user = new User({
-    username: req.query.username,
-    password: req.query.password,
-    firstName: req.query.firstName,
-    lastName: req.query.lastName,
-    postal_no: req.query.postal_no,
-    email: req.query.email,
+    username: req.body.username,
+    password: req.body.password,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    postal_no: req.body.postal_no,
+    email: req.body.email
   });
   user.save(function(err) {
     if (err)
