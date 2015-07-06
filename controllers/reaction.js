@@ -1,15 +1,12 @@
 // Load required packages
-var User = require('../models/user');
+var Reaction = require('../models/reaction');
 
 // Create endpoint /api/users for POST
-exports.createNewUser = function(req, res) {
-  var user = new User({
-    username: req.query.username,
-    password: req.query.password,
-    firstName: req.query.firstName,
-    lastName: req.query.lastName,
-    postal_no: req.query.postal_no,
-    email: req.query.email,
+exports.sendReaction = function(req, res) {
+  var reaction = new Reaction({
+    message: req.query.message,
+    from: req.query.from,
+    to: req.query.to,
   });
   user.save(function(err) {
     if (err)
