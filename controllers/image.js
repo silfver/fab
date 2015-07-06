@@ -6,7 +6,6 @@ exports.processImage = function(req, res) {
     image.cloudinary_id = req.query.image_id;
     image.by = req.query.user_id;
     image.reactions = [];
-    image.
   });
 
 };
