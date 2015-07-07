@@ -1,14 +1,16 @@
 var Image = require('../models/image');
 
 exports.register = function(req, res) {
+  var users = JSON.parse(req.body.users);
   var image = new Image({
     cloudinary_id: req.body.cloudinary_id,
     by: req.user._id,
-    reactions: []
+    reactions: [],
+    users: users
   });
   image.save(function(err) {
     if (err)
-      res.send(err);
+      console.log(err);
     res.json({ message: 'Image registered OK' });
   });
 };
