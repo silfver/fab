@@ -38,24 +38,20 @@ exports.search = function(req, res) {
 
 // TODO fix ugly error handling
 exports.addFriendToUser = function(req, res) {
-  var username = req.query.username;
+  var user_id = req.user._id;
   User.findOne({username: req.query.friend}, function(err, friend){
     if (err)
       res.send(err);
-    User.findOne({username: username}, function(err, user) {
-      if (err)
-        res.send(err);
-      User.findByIdAndUpdate(
-        user._id,
-        {$push: {friends: friend._id}},
-        {safe: true, upsert: true},
-        function(err, model) {
-          if (err) 
-            res.send(err);
-          res.json({message: 'Added friends'});
-        }
-      );
-    });
+    User.findByIdAndUpdate(
+      user_id,
+      {$push: {friends: friend._id}},
+      {safe: true, upsert: true},
+      function(err, model) {
+        if (err) 
+          res.send(err);
+        res.json({message: 'Added friends'});
+      }
+    );
   });
 };
 
@@ -64,7 +60,6 @@ exports.getUsers = function(req, res) {
   User.find(function(err, users) {
     if (err)
       res.send(err);
-
     res.json(users);
   });
 };

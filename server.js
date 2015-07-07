@@ -47,6 +47,8 @@ router.route('/image/register')
     .post(authController.isAuthenticated, imageController.register);
 router.route('/image/:id')
     .get(authController.isAuthenticated, imageController.get);
+router.route('/image/react')
+    .post(authController.isAuthenticated, imageController.react);
 router.route('/images')
     .get(authController.isAuthenticated, imageController.getAll);
 
