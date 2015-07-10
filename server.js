@@ -53,6 +53,8 @@ router.route('/image/react')
     .post(authController.isAuthenticated, imageController.react);
 router.route('/images')
     .get(authController.isAuthenticated, imageController.getAll);
+router.route('/reactions')
+    .get(authController.isAuthenticated, imageController.getAvailableReactions);
 
 app.use('/api', router);
 
