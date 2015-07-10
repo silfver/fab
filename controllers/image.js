@@ -42,8 +42,12 @@ exports.react = function(req, res) {
     );
   });
 }
+exports.getAvailableReactions = function(req, res) {
+  var reactions = ["Fab", "Superfab", "Sad"];
+  json.send(reactions);
+}
 exports.getAll = function(req, res) {
-Image.find(function(err, images) {
+  Image.find(function(err, images) {
     if (err)
       res.send(err);
     res.json(images);

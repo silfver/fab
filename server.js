@@ -39,6 +39,8 @@ router.route('/users')
     .get(authController.isAuthenticated, userController.getUsers);
 router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
+router.route('/user/:id')
+    .get(authController.isAuthenticated, userController.getById);    
 router.route('/user/add_friend')
     .put(authController.isAuthenticated, userController.addFriendToUser);
 router.route('/users/search/:username')

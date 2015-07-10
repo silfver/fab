@@ -26,6 +26,14 @@ exports.getMe = function(req, res) {
     res.json(user);
   })
 };
+exports.getById = function(req, res) {
+  var userId = req.params.id;
+  User.findOne({_id: userId}, function(err, user) {
+    if (err)
+      res.send(err);
+    res.json(user);
+  })
+};
 exports.search = function(req, res) {
   var partial_username = req.params.username;
   var query = {username: new RegExp('^'+partial_username)};
