@@ -35,13 +35,24 @@ exports.getById = function(req, res) {
   })
 };
 exports.deleteUser = function(req, res) {
-  var userId = req.params.id;
+  var userId = req.user._id;
   User.remove({_id: userId}, function(err, user) {
     if (err)
       res.json(err);
     res.json({message: "User deleted OK!"});
   })
 };
+exports.deleteFriend = function(req, res) {
+  var userId = req.user._id;
+  var friendUserId = req.params.id;
+  User.findByIdAndUpdate(userId, {
+    $pull: {"friends": friendUserId}
+  }, function(err, user) {
+    if (err) 
+      res.json(err);
+    res.json({"message": "Friend removed OK!"});
+  });
+}
 exports.search = function(req, res) {
   var partial_username = req.params.username;
   var query = {username: new RegExp('^'+partial_username)};
