@@ -10,15 +10,15 @@ exports.register = function(req, res) {
   });
   image.save(function(err) {
     if (err)
-      console.log(err);
+      res.json(err);
     res.json({ message: 'Image registered OK' });
   });
-};
+};  
 exports.get = function(req, res) {
   var image_id = req.params.id;
   Image.findOne({cloudinary_id: image_id}, function(err, image) {
     if (err)
-      res.send(err);
+      res.json(err);
     res.json(image);
   })
 }
@@ -29,15 +29,15 @@ exports.react = function(req, res) {
 
   Image.findOne({cloudinary_id: image_id}, function(err, image) {
     if (err)
-      res.send(err);
+      res.json(err);
     Image.findByIdAndUpdate(
       image._id,
       {$push: {reactions: {user: reaction_user_id, reaction: reaction_message}}},
       {safe: true, upsert: true},
       function(err, model) {
         if (err) 
-          res.send(err);
-        res.json({message: 'Added reaction OK'});
+          res.json(err);
+        res.json({message: 'Reaction sent OK'});
       }
     );
   });
@@ -49,7 +49,7 @@ exports.getAvailableReactions = function(req, res) {
 exports.getAll = function(req, res) {
   Image.find(function(err, images) {
     if (err)
-      res.send(err);
+      res.json(err);
     res.json(images);
   });
 }

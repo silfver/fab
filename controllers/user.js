@@ -14,7 +14,7 @@ exports.createNewUser = function(req, res) {
   });
   user.save(function(err) {
     if (err)
-      res.send(err);
+      res.json(err);
     res.json({ message: 'New user added' });
   });
 };
@@ -22,7 +22,7 @@ exports.getMe = function(req, res) {
   var userId = req.user._id;
   User.findOne({_id: userId}, function(err, user) {
     if (err)
-      res.send(err);
+      res.json(err);
     res.json(user);
   })
 };
@@ -30,17 +30,25 @@ exports.getById = function(req, res) {
   var userId = req.params.id;
   User.findOne({_id: userId}, function(err, user) {
     if (err)
-      res.send(err);
+      res.json(err);
     res.json(user);
+  })
+};
+exports.deleteUser = function(req, res) {
+  var userId = req.params.id;
+  User.remove({_id: userId}, function(err, user) {
+    if (err)
+      res.json(err);
+    res.json({message: "User deleted OK!"});
   })
 };
 exports.search = function(req, res) {
   var partial_username = req.params.username;
   var query = {username: new RegExp('^'+partial_username)};
-  User.find(query, function(err, user) {
+  User.find(query, function(err, users) {
     if (err) 
-      res.send(err);
-    res.json(user);
+      res.json(err);
+    res.json(users);
   });
 }
 
@@ -49,14 +57,14 @@ exports.addFriendToUser = function(req, res) {
   var user_id = req.user._id;
   User.findOne({username: req.query.friend}, function(err, friend){
     if (err)
-      res.send(err);
+      res.json(err);
     User.findByIdAndUpdate(
       user_id,
       {$push: {friends: friend._id}},
       {safe: true, upsert: true},
       function(err, model) {
         if (err) 
-          res.send(err);
+          res.json(err);
         res.json({message: 'Added friends'});
       }
     );
@@ -67,7 +75,7 @@ exports.addFriendToUser = function(req, res) {
 exports.getUsers = function(req, res) {
   User.find(function(err, users) {
     if (err)
-      res.send(err);
+      res.json(err);
     res.json(users);
   });
 };

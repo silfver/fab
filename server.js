@@ -43,6 +43,8 @@ router.route('/user/:id')
     .get(authController.isAuthenticated, userController.getById);    
 router.route('/user/add_friend')
     .put(authController.isAuthenticated, userController.addFriendToUser);
+router.route('/user/remove/:id')
+    .delete(authController.isAuthenticated, userController.deleteUser);
 router.route('/users/search/:username')
     .get(authController.isAuthenticated, userController.search);
 router.route('/image/register')
