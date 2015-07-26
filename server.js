@@ -35,6 +35,8 @@ cloudinary.config({
 
 router.route('/user/new')
     .post(userController.createNewUser);
+router.route('/user/checkname/:username')
+    .get(userController.checkUsernameAvailable);
 router.route('/users')
     .get(authController.isAuthenticated, userController.getUsers);
 router.route('/user/me')

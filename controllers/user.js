@@ -10,6 +10,7 @@ exports.createNewUser = function(req, res) {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     postal_no: req.body.postal_no,
+    profile_picture: req.body.profile_picture,
     email: req.body.email
   });
   user.save(function(err) {
@@ -26,6 +27,16 @@ exports.getMe = function(req, res) {
     res.json(user);
   })
 };
+exports.checkUsernameAvailable = function(req, res) {
+  var username = req.params.username;
+  console.log(username);
+  User.findOne({ username: username }, function (err, user) {
+    if (!user)
+      res.json({message: "Username available!"});
+    else
+      res.json({message: "Username not available"}); 
+  });
+}
 exports.getById = function(req, res) {
   var userId = req.params.id;
   User.findOne({_id: userId}, function(err, user) {
