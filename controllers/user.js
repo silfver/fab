@@ -1,10 +1,9 @@
 // Load required packages
 var User = require('../models/user');
-var redis = require('redis');
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
   var client = require("redis").createClient(rtg.port, rtg.hostname);
-redis.auth(rtg.auth.split(":")[1]);
+  client.auth(rtg.auth.split(":")[1]);
 } else {
     var client = require("redis").createClient();
 }
