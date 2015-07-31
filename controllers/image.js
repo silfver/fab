@@ -1,7 +1,11 @@
 var Image = require('../models/image');
 var redis = require('redis');
-var client = redis.createClient();
-
+if (process.env.REDISTOGO_URL) {
+  var rtg   = require("url").parse(process.env.REDISTOGO_URL);
+  var client = require("redis").createClient(rtg.port, rtg.hostname);
+} else {
+    var client = require("redis").createClient();
+}
 exports.register = function(req, res) {
   var users = JSON.parse(req.body.users);
   var image = new Image({
