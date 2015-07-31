@@ -7,6 +7,7 @@ var http = require('http').Server(app);
 var url = require('url');
 var bodyParser = require('body-parser');
 var cloudinary = require('cloudinary');
+var cors = require('cors');
 var done = false;
 var mongoose = require('mongoose');
 var expressSession = require('express-session');
@@ -17,11 +18,11 @@ var authController = require('./controllers/auth');
 var imageController = require('./controllers/image');
 
 mongoose.connect(process.env.MONGOLAB_URI);
-
 var router = express.Router();
 
 app.use(expressSession({secret: 'process.env.EXPRESSECRETKEY'}));
 app.use(passport.initialize());
+app.use(cors());
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -41,8 +42,10 @@ router.route('/users')
     .get(authController.isAuthenticated, userController.getUsers);
 router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
+router.route('/user/unseen_images')
+    .get(authController.isAuthenticated, userController.getUnseenImages);  
 router.route('/user/:id')
-    .get(authController.isAuthenticated, userController.getById);    
+    .get(authController.isAuthenticated, userController.getById);      
 router.route('/user/add_friend')
     .put(authController.isAuthenticated, userController.addFriendToUser);
 router.route('/user/remove/:id')

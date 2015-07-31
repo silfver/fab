@@ -1,5 +1,7 @@
 // Load required packages
 var User = require('../models/user');
+var redis = require('redis');
+var client = redis.createClient();
 
 // Create endpoint /api/users for POST
 exports.createNewUser = function(req, res) {
@@ -73,8 +75,12 @@ exports.search = function(req, res) {
     res.json(users);
   });
 }
-
-// TODO fix ugly error handling
+exports.getUnseenImages = function(req, res) {
+  var user_id = req.user._id;
+  client.lrange(user_id, 0, -1, function(err, reply) {
+    res.json(JSON.stringify(reply));
+  }); 
+}
 exports.addFriendToUser = function(req, res) {
   var user_id = req.user._id;
   User.findOne({username: req.query.friend}, function(err, friend){
@@ -92,12 +98,13 @@ exports.addFriendToUser = function(req, res) {
     );
   });
 };
-
-// Create endpoint /api/users for GET
 exports.getUsers = function(req, res) {
   User.find(function(err, users) {
     if (err)
       res.json(err);
     res.json(users);
   });
+};
+exports.checkForNewImages = function(req, res) {
+
 };

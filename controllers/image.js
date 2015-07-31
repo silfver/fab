@@ -1,4 +1,6 @@
 var Image = require('../models/image');
+var redis = require('redis');
+var client = redis.createClient();
 
 exports.register = function(req, res) {
   var users = JSON.parse(req.body.users);
@@ -7,6 +9,14 @@ exports.register = function(req, res) {
     by: req.user._id,
     reactions: [],
     users: users
+  });
+  users.forEach(function(user) {
+    console.log(user, req.body.cloudinary_id);
+    client.lpush(user, req.body.cloudinary_id, function(err, reply) {
+      if (err)
+        res.json(err);
+      console.log(reply);
+    });
   });
   image.save(function(err) {
     if (err)
