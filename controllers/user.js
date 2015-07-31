@@ -1,7 +1,7 @@
 // Load required packages
 var User = require('../models/user');
 var redis = require('redis');
-var client = redis.createClient();
+var client = redis.createClient(process.env.REDISTOGO_URL);
 
 // Create endpoint /api/users for POST
 exports.createNewUser = function(req, res) {
