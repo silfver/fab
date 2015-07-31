@@ -60,6 +60,9 @@ router.route('/image/:id')
     .get(authController.isAuthenticated, imageController.get);
 router.route('/image/react')
     .post(authController.isAuthenticated, imageController.react);
+router.route('/image/reactions/:id')
+    .get(authController.isAuthenticated, imageController.getReactions);
+
 router.route('/images')
     .get(authController.isAuthenticated, imageController.getAll);
 router.route('/reactions')

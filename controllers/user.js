@@ -79,8 +79,10 @@ exports.getUnseenImages = function(req, res) {
   var user_id = req.user._id;
   client.lrange(user_id, 0, -1, function(err, reply) {
     res.json(JSON.stringify(reply));
-  }); 
+  });
+  client.del(user_id);
 }
+
 exports.addFriendToUser = function(req, res) {
   var user_id = req.user._id;
   User.findOne({username: req.query.friend}, function(err, friend){
@@ -104,7 +106,4 @@ exports.getUsers = function(req, res) {
       res.json(err);
     res.json(users);
   });
-};
-exports.checkForNewImages = function(req, res) {
-
 };
