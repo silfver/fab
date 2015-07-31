@@ -15,11 +15,9 @@ exports.register = function(req, res) {
     reactions: []
   });
   users.forEach(function(user) {
-    console.log(user, req.body.cloudinary_id);
     client.lpush(user, req.body.cloudinary_id, function(err, reply) {
       if (err)
         res.json(err);
-      console.log(err, reply);
     });
   });
   image.save(function(err) {
@@ -46,7 +44,7 @@ exports.react = function(req, res) {
     console.log(reply);
     res.json({message: 'Reaction sent OK!'});
   });
-  Image.findOne({cloudinary_id: image_id}, function(err, image) {
+  /*Image.findOne({cloudinary_id: image_id}, function(err, image) {
     if (err)
       res.json(err);
     Image.findByIdAndUpdate(
@@ -56,10 +54,9 @@ exports.react = function(req, res) {
       function(err, model) {
         if (err) 
           res.json(err);
-        //res.json({message: 'Reaction sent OK'});
       }
     );
-  });
+  });*/
 }
 exports.getReactions = function(req, res) {
   var image_id = req.params.id;
@@ -69,7 +66,7 @@ exports.getReactions = function(req, res) {
 }
 exports.getAvailableReactions = function(req, res) {
   var reactions = ["Fab", "Superfab", "Sad"];
-  json.send(reactions);
+  res.json(reactions);
 }
 exports.getAll = function(req, res) {
   Image.find(function(err, images) {

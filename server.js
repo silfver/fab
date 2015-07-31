@@ -65,7 +65,7 @@ router.route('/image/reactions/:id')
 router.route('/images')
     .get(authController.isAuthenticated, imageController.getAll);
 router.route('/reactions')
-    .get(authController.isAuthenticated, imageController.getAvailableReactions);
+    .get(imageController.getAvailableReactions);
 
 app.use('/api', router);
 
