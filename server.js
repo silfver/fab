@@ -33,6 +33,7 @@ cloudinary.config({
     api_key: cloudinary_vars.auth.split(':')[0], 
     api_secret: cloudinary_vars.auth.split(':')[1]
 });
+// cloudinary.api.delete_all_resources(function(result){});
 
 router.route('/user/new')
     .post(userController.createNewUser);
@@ -44,10 +45,10 @@ router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
 router.route('/user/unseen_images')
     .get(authController.isAuthenticated, userController.getUnseenImages);  
-router.route('/user/:id')
-    .get(authController.isAuthenticated, userController.getById);      
 router.route('/user/add_friend')
     .put(authController.isAuthenticated, userController.addFriendToUser);
+router.route('/user/:id')
+    .get(authController.isAuthenticated, userController.getById);      
 router.route('/user/remove/:id')
     .delete(authController.isAuthenticated, userController.deleteUser);
 router.route('/user/remove_friend/:id')

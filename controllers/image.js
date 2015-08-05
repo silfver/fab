@@ -65,7 +65,7 @@ exports.getReactions = function(req, res) {
   });
 }
 exports.getAvailableReactions = function(req, res) {
-  var reactions = ["Fab", "Superfab", "Sad"];
+  var reactions = ["Fab", "Superfab", "Sad", "OMG", "What's UP?!"];
   res.json(reactions);
 }
 exports.getAll = function(req, res) {
