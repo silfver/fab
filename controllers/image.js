@@ -41,7 +41,6 @@ exports.react = function(req, res) {
   client.lpush(image_id, JSON.stringify([reaction_user_id, reaction_message]), function(err, reply) {
     if (err)
       res.json(err);
-    console.log(reply);
     res.json({message: 'Reaction sent OK!'});
   });
 }
