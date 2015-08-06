@@ -44,19 +44,6 @@ exports.react = function(req, res) {
     console.log(reply);
     res.json({message: 'Reaction sent OK!'});
   });
-  /*Image.findOne({cloudinary_id: image_id}, function(err, image) {
-    if (err)
-      res.json(err);
-    Image.findByIdAndUpdate(
-      image._id,
-      {$push: {reactions: {user: reaction_user_id, reaction: reaction_message}}},
-      {safe: true, upsert: true},
-      function(err, model) {
-        if (err) 
-          res.json(err);
-      }
-    );
-  });*/
 }
 exports.getReactions = function(req, res) {
   var image_id = req.params.id;
