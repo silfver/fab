@@ -9,7 +9,6 @@ if (process.env.REDISTOGO_URL) {
 }
 // Create endpoint /api/users for POST
 exports.createNewUser = function(req, res) {
-  console.log(req.body);
   var user = new User({
     username: req.body.username,
     password: req.body.password,
@@ -35,7 +34,6 @@ exports.getMe = function(req, res) {
 };
 exports.checkUsernameAvailable = function(req, res) {
   var username = req.params.username;
-  console.log(username);
   User.findOne({ username: username }, function (err, user) {
     if (!user)
       res.json({message: "Username available!"});
@@ -94,7 +92,7 @@ exports.addFriendToUser = function(req, res) {
       res.json(err);
     User.findByIdAndUpdate(
       user_id,
-      {$push: {friends: friend._id}},
+      {$addToSet: {friends: friend._id}},
       {safe: true, upsert: true},
       function(err, model) {
         if (err) 
