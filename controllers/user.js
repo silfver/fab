@@ -94,7 +94,7 @@ exports.addFriendToUser = function(req, res) {
     User.findByIdAndUpdate(
       user_id,
       {$addToSet: {friends: friend._id}},
-      {safe: true, upsert: true},
+      {safe: false, upsert: true},
       function(err, model) {
         if (err) 
           res.json(err);
