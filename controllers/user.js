@@ -87,8 +87,7 @@ exports.getUnseenImages = function(req, res) {
 
 exports.addFriendToUser = function(req, res) {
   var user_id = req.user._id;
-  console.log(req.body.friend);
-  User.findOne({username: req.query.friend}, function(err, friend){
+  User.findOne({username: req.body.friend}, function(err, friend){
     if (err)
       res.json(err);
     User.findByIdAndUpdate(
