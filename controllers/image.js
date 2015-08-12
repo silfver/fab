@@ -20,6 +20,7 @@ exports.register = function(req, res) {
         res.json(err);
     });
   });
+  client.set(req.user._id+"_latest", req.body.cloudinary_id);
   image.save(function(err) {
     if (err)
       res.json(err);

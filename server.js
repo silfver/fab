@@ -49,7 +49,9 @@ router.route('/user/add_friend')
     .put(authController.isAuthenticated, userController.addFriendToUser);
 router.route('/user/:id')
     .get(authController.isAuthenticated, userController.getById);      
-router.route('/user/remove/:id')
+router.route('/user/image/latest/')
+    .get(authController.isAuthenticated, userController.getLatestImage);      
+router.route('/user/remove/')
     .delete(authController.isAuthenticated, userController.deleteUser);
 router.route('/user/remove_friend/:id')
     .delete(authController.isAuthenticated, userController.deleteFriend);

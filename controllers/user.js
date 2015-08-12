@@ -84,6 +84,12 @@ exports.getUnseenImages = function(req, res) {
   });
   client.del(user_id);
 }
+exports.getLatestImage = function(req, res) {
+  var user_id = req.user._id;
+  client.get(user_id+"_latest", function(err, reply) {
+    res.json(JSON.stringify(reply));
+  });
+}
 
 exports.addFriendToUser = function(req, res) {
   var user_id = req.user._id;
@@ -91,8 +97,8 @@ exports.addFriendToUser = function(req, res) {
     if (err)
       res.json(err);
     User.findByIdAndUpdate(
-      user_id,
-      {$addToSet: {friends: friend._id}},
+      friend._id,
+      {$addToSet: {friends: user_id}},
       {safe: false, upsert: true},
       function(err, model) {
         if (err) 
