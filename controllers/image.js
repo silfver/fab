@@ -52,7 +52,9 @@ exports.getReactions = function(req, res) {
   });
 }
 exports.getAvailableReactions = function(req, res) {
-  var reactions = ["Fab", "Superfab", "Sad", "OMG", "What's UP?!"];
+  var available_reactions = [["fab", "superfab", "sad"],["nice","supernice","bad"], ["cool","epic","fail"],["chill","love it","wtf?!"], ["naw","so cute","omg"]
+                              ];
+  var reactions = available_reactions[Math.floor(Math.random() * 4)];
   res.json(reactions);
 }
 exports.getAll = function(req, res) {
