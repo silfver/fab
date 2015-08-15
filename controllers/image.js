@@ -52,9 +52,9 @@ exports.getReactions = function(req, res) {
   });
 }
 exports.getAvailableReactions = function(req, res) {
-  var available_reactions = [["fab", "superfab", "sad"],["nice","supernice","bad"], ["cool","epic","fail"],["chill","love it","wtf?!"], ["naw","so cute","omg"]
-                              ];
-  var reactions = available_reactions[Math.floor(Math.random() * 4)];
+  var available_reactions = [["fab", "superfab", "sad"],["nice","supernice","bad"], ["cool","epic","fail"],["chill","love it","wtf?!"], ["naw","so cute","omg"],
+  ["classy","top","eeew"], ["boss","so boss","lame"]];
+  var reactions = available_reactions[Math.floor(Math.random() * 6)];
   res.json(reactions);
 }
 exports.getAll = function(req, res) {
