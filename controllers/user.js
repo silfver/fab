@@ -79,10 +79,10 @@ exports.search = function(req, res) {
 }
 exports.getUnseenImages = function(req, res) {
   var user_id = req.user._id;
-  client.lrange(user_id, 0, -1, function(err, reply) {
+  client.lrange(user_id+"_unseen", 0, -1, function(err, reply) {
     res.json(JSON.stringify(reply));
   });
-  client.del(user_id);
+  client.del(user_id+"_unseen");
 }
 exports.getLatestImage = function(req, res) {
   var user_id = req.user._id;
@@ -90,20 +90,32 @@ exports.getLatestImage = function(req, res) {
     res.json(JSON.stringify(reply));
   });
 }
-
+exports.getNewFriends = function(req, res) {
+  var user_id = req.user._id;
+  client.lrange(user_id+"_new_friends",0, -1, function(err, reply) {
+    console.log(reply);
+    res.json(JSON.stringify(reply));
+  });
+  client.del(user_id+"_new_friends");
+}
 exports.addFriendToUser = function(req, res) {
   var user_id = req.user._id;
   User.findOne({username: req.body.friend}, function(err, friend){
+    friend_id = friend._id;
     if (err)
       res.json(err);
     User.findByIdAndUpdate(
-      friend._id,
+      friend_id,
       {$addToSet: {friends: user_id}},
       {safe: false, upsert: true},
       function(err, model) {
         if (err) 
           res.json(err);
-        res.json({message: 'Added friends'});
+        client.lpush(friend_id+"_new_friends", user_id, function(err, reply) {
+          if (err)
+            res.json(err);
+          res.json({message: 'Added friends'});
+        });
       }
     );
   });

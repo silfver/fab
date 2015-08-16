@@ -15,7 +15,7 @@ exports.register = function(req, res) {
     reactions: []
   });
   users.forEach(function(user) {
-    client.lpush(user, req.body.cloudinary_id, function(err, reply) {
+    client.lpush(user+"_unseen", req.body.cloudinary_id, function(err, reply) {
       if (err)
         res.json(err);
     });
