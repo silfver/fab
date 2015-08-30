@@ -20,7 +20,7 @@ exports.register = function(req, res) {
         res.json(err);
     });
   });
-  client.set(req.user._id+"_latest", req.body.cloudinary_id);
+  client.lpush(req.user._id+"_latest", req.body.cloudinary_id);
   image.save(function(err) {
     if (err)
       res.json(err);
@@ -39,6 +39,7 @@ exports.react = function(req, res) {
   var image_id = req.body.cloudinary_id;
   var reaction_user_id = req.user._id;
   var reaction_message = req.body.reaction_message;
+  client.lpush(reaction_user_id+"_reactions", JSON.stringify([image_id, reaction_message]));
   client.lpush(image_id, JSON.stringify([reaction_user_id, reaction_message]), function(err, reply) {
     if (err)
       res.json(err);
@@ -49,6 +50,24 @@ exports.getReactions = function(req, res) {
   var image_id = req.params.id;
   client.lrange(image_id, 0, -1, function(err, reply) {
     res.json(reply);
+  });
+}
+function getReactionsByImage(image, callback) {
+  client.lrange(image, 0, -1, function(err, reply) {
+    callback(reply);
+  });  
+}
+exports.getReactionList = function(req, res) {
+  var userId = req.user._id;
+  var reactions = [];
+  client.lrange(userId+"_latest", 0, -1, function(err, reply) {
+    reply.forEach(function(image) {
+      getReactionsByImage(image, function(reaction) {
+        reactions = reactions.concat(reaction);
+        console.log(reactions);
+      });
+    });
+    res.json(reactions);
   });
 }
 exports.getAvailableReactions = function(req, res) {
