@@ -68,6 +68,17 @@ exports.deleteFriend = function(req, res) {
     res.json({"message": "Friend removed OK!"});
   });
 }
+exports.updateProfileImage = function(req, res) {
+  var userId = req.user._id;
+  var cloudinary_id = req.params.id;
+  User.findByIdAndUpdate(userId, {
+    $set: {"profile_picture": cloudinary_id}
+  }, function(err, user) {
+    if (err) 
+      res.json(err);
+    res.json({"message": "Profile picture!"});
+  });
+}
 exports.search = function(req, res) {
   var partial_username = req.params.username;
   var query = {username: new RegExp('^'+partial_username)};
