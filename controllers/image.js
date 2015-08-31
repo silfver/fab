@@ -37,13 +37,20 @@ exports.get = function(req, res) {
 }
 exports.react = function(req, res) {
   var image_id = req.body.cloudinary_id;
-  var reaction_user_id = req.user._id;
-  var reaction_message = req.body.reaction_message;
-  client.lpush(reaction_user_id+"_reactions", JSON.stringify([image_id, reaction_message]));
-  client.lpush(image_id, JSON.stringify([reaction_user_id, reaction_message]), function(err, reply) {
-    if (err)
-      res.json(err);
-    res.json({message: 'Reaction sent OK!'});
+  Image.findOne({cloudinary_id: image_id}, function(err, image) {
+    var image_owner = image.by;
+    var reaction_user_id = req.user._id;
+    var reaction_message = req.body.reaction_message;
+    client.lpush(image_owner+"_reactions", JSON.stringify([reaction_user_id, image_id, reaction_message]), function(err, size) {
+      if (size > 10) {client.rpop(image_owner+"_reactions");}
+    });
+    client.lpush(image_id, JSON.stringify([reaction_user_id, reaction_message]), function(err, size) {
+      if (err)
+        res.json(err);
+      if (size > 20) {client.rpop(image_id);}
+      res.json({message: 'Reaction sent OK!'});
+    });
+
   });
 }
 exports.getReactions = function(req, res) {
@@ -52,22 +59,12 @@ exports.getReactions = function(req, res) {
     res.json(reply);
   });
 }
-function getReactionsByImage(image, callback) {
-  client.lrange(image, 0, -1, function(err, reply) {
-    callback(reply);
-  });  
-}
+
 exports.getReactionList = function(req, res) {
   var userId = req.user._id;
   var reactions = [];
-  client.lrange(userId+"_latest", 0, -1, function(err, reply) {
-    reply.forEach(function(image) {
-      getReactionsByImage(image, function(reaction) {
-        reactions = reactions.concat(reaction);
-        console.log(reactions);
-      });
-    });
-    res.json(reactions);
+  client.lrange(userId+"_reactions", 0, -1, function(err, reply) {
+    res.json(reply);
   });
 }
 exports.getAvailableReactions = function(req, res) {
