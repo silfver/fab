@@ -104,7 +104,6 @@ exports.getLatestImage = function(req, res) {
 exports.getNewFriends = function(req, res) {
   var user_id = req.user._id;
   client.lrange(user_id+"_new_friends",0, -1, function(err, reply) {
-    console.log(reply);
     res.json(JSON.stringify(reply));
   });
   client.del(user_id+"_new_friends");

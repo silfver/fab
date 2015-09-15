@@ -8,7 +8,8 @@ var ImageSchema = new mongoose.Schema({
       reaction: String
     }],
     by: { type: Schema.Types.ObjectId, ref: 'User' },
-    users: [{type: Schema.Types.ObjectId, ref: 'User'}]
+    users: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    hashtag: String
 });
 
 module.exports = mongoose.model('Image', ImageSchema);

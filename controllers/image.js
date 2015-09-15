@@ -12,7 +12,8 @@ exports.register = function(req, res) {
   var image = new Image({
     cloudinary_id: req.body.cloudinary_id,
     by: req.user._id,
-    reactions: []
+    reactions: [],
+    hashtag: req.body.hashtag
   });
   users.forEach(function(user) {
     client.lpush(user+"_unseen", req.body.cloudinary_id, function(err, reply) {
