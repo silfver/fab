@@ -9,7 +9,8 @@ var ImageSchema = new mongoose.Schema({
     }],
     by: { type: Schema.Types.ObjectId, ref: 'User' },
     users: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    hashtag: String
+    hashtag: String,
+    filter: String
 });
 
 module.exports = mongoose.model('Image', ImageSchema);
