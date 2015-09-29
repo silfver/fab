@@ -43,12 +43,14 @@ router.route('/users')
     .get(authController.isAuthenticated, userController.getUsers);
 router.route('/image/reactions_list')
     .get(authController.isAuthenticated, imageController.getReactionList);
+router.route('/user/following/')
+    .get(authController.isAuthenticated, userController.getFollowing);  
 router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
 router.route('/user/unseen_images')
     .get(authController.isAuthenticated, userController.getUnseenImages);  
-router.route('/user/add_friend')
-    .put(authController.isAuthenticated, userController.addFriendToUser);
+router.route('/user/start_following')
+    .put(authController.isAuthenticated, userController.startFollowing);
 router.route('/user/:id')
     .get(authController.isAuthenticated, userController.getById);  
 router.route('/user/profile_image/:id')
@@ -56,11 +58,13 @@ router.route('/user/profile_image/:id')
 router.route('/user/image/latest/')
     .get(authController.isAuthenticated, userController.getLatestImage);      
 router.route('/user/friends/new/')
-    .get(authController.isAuthenticated, userController.getNewFriends);      
+    .get(authController.isAuthenticated, userController.getNewFriends);          
 router.route('/user/remove/')
     .delete(authController.isAuthenticated, userController.deleteUser);
 router.route('/user/remove_friend/:id')
     .delete(authController.isAuthenticated, userController.deleteFriend);
+router.route('/user/stop_following/:id')
+    .delete(authController.isAuthenticated, userController.stopFollowing);
 router.route('/users/search/:username')
     .get(authController.isAuthenticated, userController.search);
 router.route('/image/register')

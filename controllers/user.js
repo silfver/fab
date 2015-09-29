@@ -68,6 +68,17 @@ exports.deleteFriend = function(req, res) {
     res.json({"message": "Friend removed OK!"});
   });
 }
+exports.stopFollowing = function(req, res) {
+  var userId = req.user._id;
+  var friendUserId = req.params.id;
+  User.findByIdAndUpdate(friendUserId, {
+    $pull: {"friends": userId}
+  }, function(err, user) {
+    if (err) 
+      res.json(err);
+    res.json({"message": "Stopped following OK!"});
+  });
+}
 exports.updateProfileImage = function(req, res) {
   var userId = req.user._id;
   var cloudinary_id = req.params.id;
@@ -108,7 +119,7 @@ exports.getNewFriends = function(req, res) {
   });
   client.del(user_id+"_new_friends");
 }
-exports.addFriendToUser = function(req, res) {
+exports.startFollowing = function(req, res) {
   var user_id = req.user._id;
   User.findOne({username: req.body.friend}, function(err, friend){
     friend_id = friend._id;
@@ -130,7 +141,14 @@ exports.addFriendToUser = function(req, res) {
     );
   });
 };
-
+exports.getFollowing = function(req, res) {
+  var user_id = req.user._id;
+  User.find({friends: user_id}, function(err, following) {
+    if (err)
+      res.json(err);
+    res.json(following);
+  })
+}
 exports.getUsers = function(req, res) {
   User.find(function(err, users) {
     if (err)

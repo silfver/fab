@@ -11,7 +11,7 @@ var UserSchema = new mongoose.Schema({
     profile_picture: String,
     email: String,
     friends: [{ type: Schema.Types.ObjectId, ref: 'User' }]
-});
+  });
 
 UserSchema.methods.verifyPassword = function(password, cb) {
   bcrypt.compare(password, this.password, function(err, isMatch) {
