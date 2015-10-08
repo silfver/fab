@@ -10,6 +10,7 @@ var UserSchema = new mongoose.Schema({
     postal_no: String,
     profile_picture: String,
     email: String,
+    planets: [{ type: Schema.Types.ObjectId, ref: 'Planet' }],
     friends: [{ type: Schema.Types.ObjectId, ref: 'User' }]
   });
 
