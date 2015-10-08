@@ -91,8 +91,8 @@ exports.updateProfileImage = function(req, res) {
   });
 }
 exports.search = function(req, res) {
-  var partial_username = req.params.username;
-  var query = {username: new RegExp('^'+partial_username)};
+  var partial_username = req.params.username.toLowerCase();;
+  var query = {username: new RegExp('^'+partial_username, 'i')};
   User.find(query, function(err, users) {
     if (err) 
       res.json(err);
