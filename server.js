@@ -16,6 +16,8 @@ var User = require('./models/user');
 var userController = require('./controllers/user');
 var authController = require('./controllers/auth');
 var imageController = require('./controllers/image');
+var planetController = require('./controllers/planet');
+
 
 mongoose.connect(process.env.MONGOLAB_URI);
 var router = express.Router();
@@ -79,6 +81,10 @@ router.route('/images')
     .get(authController.isAuthenticated, imageController.getAll);
 router.route('/reactions')
     .get(imageController.getAvailableReactions);
+router.route('/planet/new')
+    .post(authController.isAuthenticated, planetController.createNewPlanet);
+router.route('/planets/')
+    .get(authController.isAuthenticated, planetController.getPlanets);
 
 app.use('/api', router);
 
