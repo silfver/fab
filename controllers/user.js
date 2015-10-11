@@ -149,6 +149,14 @@ exports.getFollowing = function(req, res) {
     res.json(following);
   })
 }
+exports.getPlanets = function(req, res) {
+  var user_id = req.user._id;
+  User.findOne({_id: user_id}, function(err, user) {
+    if (err)
+      res.json(err);
+    res.json(user.planets);
+  })
+}
 exports.getUsers = function(req, res) {
   User.find(function(err, users) {
     if (err)

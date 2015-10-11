@@ -14,6 +14,7 @@ exports.register = function(req, res) {
     by: req.user._id,
     reactions: [],
     hashtag: req.body.hashtag,
+    planet: req.body.planet_id,
     filter: req.body.filter
   });
   users.forEach(function(user) {

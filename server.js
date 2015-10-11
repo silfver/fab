@@ -53,6 +53,8 @@ router.route('/user/unseen_images')
     .get(authController.isAuthenticated, userController.getUnseenImages);  
 router.route('/user/start_following')
     .put(authController.isAuthenticated, userController.startFollowing);
+router.route('/user/planets')
+    .get(authController.isAuthenticated, userController.getPlanets);
 router.route('/user/:id')
     .get(authController.isAuthenticated, userController.getById);  
 router.route('/user/profile_image/:id')
