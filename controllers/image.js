@@ -18,7 +18,7 @@ exports.register = function(req, res) {
     filter: req.body.filter
   });
   users.forEach(function(user) {
-    client.lpush(user+"_unseen", req.body.cloudinary_id, function(err, reply) {
+    client.lpush(user+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
       if (err)
         res.json(err);
     });
@@ -44,7 +44,8 @@ exports.react = function(req, res) {
     var image_owner = image.by;
     var reaction_user_id = req.user._id;
     var reaction_message = req.body.reaction_message;
-    client.lpush(image_owner+"_reactions", JSON.stringify([reaction_user_id, image_id, reaction_message]), function(err, size) {
+    var filter = image.filter;
+    client.lpush(image_owner+"_reactions", JSON.stringify([reaction_user_id, image_id, reaction_message, filter]), function(err, size) {
       if (size > 10) {client.rpop(image_owner+"_reactions");}
     });
     client.lpush(image_id, JSON.stringify([reaction_user_id, reaction_message]), function(err, size) {
