@@ -35,7 +35,7 @@ exports.deletePlanet = function(req, res) {
   Planet.remove({_id: planet_id}, function(err, planet) {
     if (err)
       res.json(err);
-    res.json({message: "User deleted OK!"});
+    res.json({message: "Planet deleted OK!"});
   })
 };
 
@@ -59,7 +59,7 @@ exports.startFollowing = function(req, res) {
     function(err, model) {
       if (err) 
         res.json(err);
-      res.json({message: 'Added friends'});
+      res.json({message: 'Added planet'});
     }
   );
 };

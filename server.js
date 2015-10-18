@@ -75,6 +75,8 @@ router.route('/image/register')
     .post(authController.isAuthenticated, imageController.register);
 router.route('/image/:id')
     .get(authController.isAuthenticated, imageController.get);
+router.route('/image/get_hash')
+    .post(authController.isAuthenticated, imageController.getHash);
 router.route('/image/react')
     .post(authController.isAuthenticated, imageController.react);
 router.route('/image/reactions/:id')

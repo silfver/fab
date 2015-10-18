@@ -1,3 +1,4 @@
+var crypto = require('crypto');
 var Image = require('../models/image');
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
@@ -83,4 +84,10 @@ exports.getAll = function(req, res) {
       res.json(err);
     res.json(images);
   });
+}
+exports.getHash = function(req, res) {
+  var string = req.body.string;
+  var shasum = crypto.createHash('sha1');
+  shasum.update(string);
+  res.json(shasum.digest('hex'));
 }
