@@ -1,3 +1,5 @@
+var url = require('url');
+var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
 var crypto = require('crypto');
 var Image = require('../models/image');
 if (process.env.REDISTOGO_URL) {
@@ -86,7 +88,7 @@ exports.getAll = function(req, res) {
   });
 }
 exports.getHash = function(req, res) {
-  var string = req.body.timestamp+'ajmGJfwrimKrdiZeTuF29V8QO34';
+  var string = req.body.timestamp+cloudinary_vars.auth.split(':')[1];
   var shasum = crypto.createHash('sha1');
   shasum.update(string);
   res.json(shasum.digest('hex'));
