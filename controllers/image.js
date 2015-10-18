@@ -86,7 +86,7 @@ exports.getAll = function(req, res) {
   });
 }
 exports.getHash = function(req, res) {
-  var string = req.body.string;
+  var string = req.body.timestamp+'ajmGJfwrimKrdiZeTuF29V8QO34';
   var shasum = crypto.createHash('sha1');
   shasum.update(string);
   res.json(shasum.digest('hex'));
