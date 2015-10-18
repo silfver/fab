@@ -88,7 +88,7 @@ exports.getAll = function(req, res) {
   });
 }
 exports.getHash = function(req, res) {
-  var string = 'api_key=685122177578734'+"&timestamp="+Math.floor(Date.now() / 1000)+cloudinary_vars.auth.split(':')[1];
+  var string = "timestamp="+req.body.timestamp+cloudinary_vars.auth.split(':')[1];
   var shasum = crypto.createHash('sha1');
   shasum.update(string);
   res.json(shasum.digest('hex'));
