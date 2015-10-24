@@ -123,7 +123,7 @@ exports.getLatestImage = function(req, res) {
     res.json(JSON.stringify(reply));
   });
 }
-exports.getNewFriends = function(req, res) {
+exports.getNewFollowers = function(req, res) {
   var user_id = req.user._id;
   client.lrange(user_id+"_new_friends",0, -1, function(err, reply) {
     res.json(JSON.stringify(reply));

@@ -63,8 +63,8 @@ router.route('/user/background_image/:id')
     .put(authController.isAuthenticated, userController.updateProfileImage);      
 router.route('/user/image/latest/')
     .get(authController.isAuthenticated, userController.getLatestImage);      
-router.route('/user/friends/new/')
-    .get(authController.isAuthenticated, userController.getNewFriends);          
+router.route('/user/followers/new/')
+    .get(authController.isAuthenticated, userController.getNewFollowers);          
 router.route('/user/remove/')
     .delete(authController.isAuthenticated, userController.deleteUser);
 router.route('/user/remove_friend/:id')
