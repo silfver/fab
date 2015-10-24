@@ -87,7 +87,18 @@ exports.updateProfileImage = function(req, res) {
   }, function(err, user) {
     if (err) 
       res.json(err);
-    res.json({"message": "Profile picture!"});
+    res.json({"message": "Profile picture updated!"});
+  });
+}
+exports.updateProfileImage = function(req, res) {
+  var userId = req.user._id;
+  var cloudinary_id = req.params.id;
+  User.findByIdAndUpdate(userId, {
+    $set: {"background_picture": cloudinary_id}
+  }, function(err, user) {
+    if (err) 
+      res.json(err);
+    res.json({"message": "Background picture updated!"});
   });
 }
 exports.search = function(req, res) {

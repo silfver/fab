@@ -9,6 +9,7 @@ var UserSchema = new mongoose.Schema({
     lastName: String,
     postal_no: String,
     profile_picture: String,
+    background_picture: String,
     email: String,
     ranking: Number,
     planets: [{ type: Schema.Types.ObjectId, ref: 'Planet' }],

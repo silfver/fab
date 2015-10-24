@@ -59,6 +59,8 @@ router.route('/user/:id')
     .get(authController.isAuthenticated, userController.getById);  
 router.route('/user/profile_image/:id')
     .put(authController.isAuthenticated, userController.updateProfileImage);      
+router.route('/user/background_image/:id')
+    .put(authController.isAuthenticated, userController.updateProfileImage);      
 router.route('/user/image/latest/')
     .get(authController.isAuthenticated, userController.getLatestImage);      
 router.route('/user/friends/new/')
