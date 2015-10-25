@@ -1,4 +1,5 @@
 var url = require('url');
+var fs = require('fs');
 var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
 var crypto = require('crypto');
 var Image = require('../models/image');
@@ -26,7 +27,9 @@ exports.register = function(req, res) {
         res.json(err);
     });
   });
-  client.lpush(req.user._id+"_latest", req.body.cloudinary_id);
+  client.lpush(req.user._id+"_latest", req.body.cloudinary_id, function(err, size) {
+    if (size > 10) {client.rpop(image_owner+"_latest");}
+  });
   image.save(function(err) {
     if (err)
       res.json(err);
@@ -75,10 +78,12 @@ exports.getReactionList = function(req, res) {
   });
 }
 exports.getAvailableReactions = function(req, res) {
-  var available_reactions = [["fab", "superfab", "sad"],["nice","supernice","bad"], ["cool","epic","fail"],["chill","love it","wtf?!"], ["naw","so cute","omg"],
-  ["classy","top","eeew"], ["boss","so boss","lame"]];
-  var reactions = available_reactions[Math.floor(Math.random() * 6)];
-  res.json(reactions);
+  fs.readFile('reactions.json', 'utf8', function (err, data) {
+    if (err) throw err;
+    available_reactions = JSON.parse(data);
+    var reactions = available_reactions[Math.floor(Math.random() * 23)];
+    res.json(reactions);
+  })
 }
 exports.getAll = function(req, res) {
   Image.find(function(err, images) {
