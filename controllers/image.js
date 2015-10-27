@@ -3,6 +3,7 @@ var fs = require('fs');
 var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
 var crypto = require('crypto');
 var Image = require('../models/image');
+var User = require('../models/user');
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
   var client = require("redis").createClient(rtg.port, rtg.hostname);
@@ -12,6 +13,7 @@ if (process.env.REDISTOGO_URL) {
     var client = require("redis").createClient();
 }
 exports.register = function(req, res) {
+  bump_ranking(req.user._id, 10);
   var users = JSON.parse(req.body.users);
   var image = new Image({
     cloudinary_id: req.body.cloudinary_id,
@@ -46,6 +48,7 @@ exports.get = function(req, res) {
 }
 exports.react = function(req, res) {
   var image_id = req.body.cloudinary_id;
+  bump_ranking(req.user._id, 2);
   Image.findOne({cloudinary_id: image_id}, function(err, image) {
     var image_owner = image.by;
     var reaction_user_id = req.user._id;
@@ -97,4 +100,11 @@ exports.getHash = function(req, res) {
   var shasum = crypto.createHash('sha1');
   shasum.update(string);
   res.json(shasum.digest('hex'));
+}
+
+function bump_ranking(userId, amount) {
+  User.findByIdAndUpdate(userId, {
+    $inc: {"ranking": amount}
+  }, function(err, user) {
+  });
 }

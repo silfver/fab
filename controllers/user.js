@@ -120,7 +120,6 @@ exports.getUnseenImages = function(req, res) {
 exports.getLatestImage = function(req, res) {
   var user_id = req.user._id;
   client.lrange(user_id+"_latest", 0, -1, function(err, reply) {
-    console.log(err);
     res.json(JSON.stringify(reply));
   });
 }
