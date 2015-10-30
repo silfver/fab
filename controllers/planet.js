@@ -58,6 +58,16 @@ exports.startFollowing = function(req, res, next) {
     }
   );
 };
+exports.stopFollowing = function(req, res, next) {
+  var userId = req.user._id;
+  var planet_id = req.params.id;
+  User.findByIdAndUpdate(userId, {
+    $pull: {planets: planet_id}
+  }, function(err, user) {
+    if(err) return next(err);
+    res.json({"message": "Stopped following OK!"});
+  });
+}
 exports.getPlanets = function(req, res, next) {
   Planet.find(function(err, planets) {
     if(err) return next(err);
