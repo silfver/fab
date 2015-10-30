@@ -119,7 +119,7 @@ exports.getUnseenImages = function(req, res) {
 exports.getLatestImage = function(req, res) {
   var user_id = req.user._id;
   client.lrange(user_id+"_latest", 0, -1, function(err, reply) {
-    res.json(JSON.stringify(reply));
+    res.json(reply);
   });
 }
 exports.getNewFollowers = function(req, res) {
@@ -163,10 +163,12 @@ exports.getFollowers = function(req, res, next) {
 }
 exports.getPlanets = function(req, res, next) {
   var user_id = req.user._id;
-  User.findOne({_id: user_id}, function(err, user) {
-    if(err) return next(err);
-    res.json(user.planets);      
-  })
+  User.findOne({ _id: user_id })
+  .populate('planets')
+  .exec(function (err, user) {
+    if (err) next(err);
+    res.json(user.planets)
+  });
 }
 exports.getUsers = function(req, res, next) {
   User.find(function(err, users) {

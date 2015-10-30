@@ -75,3 +75,9 @@ exports.getPlanets = function(req, res, next) {
     res.json(planets);
   });
 };
+exports.getLatestById = function(req, res, next) {
+  var planet_id = req.params.id;
+  client.lrange(planet_id+"_planet_latest", 0, -1, function(err, reply) {
+    res.json(reply);
+  });
+}

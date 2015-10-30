@@ -29,8 +29,11 @@ exports.register = function(req, res, next) {
       if (err) console.log(err); // silently fail and log here
     });
   });
-  client.lpush(req.user._id+"_latest", req.body.cloudinary_id, function(err, size) {
+  client.lpush(req.user._id+"_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
     if (size > 10) {client.rpop(req.user_id+"_latest");}
+  });
+  client.lpush(req.body.planet_id+"_planet_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
+    if (size > 10) {client.rpop(req.body.planet_id+"_planet_latest");}
   });
   image.save(function(err) {
     if (err) next(err);
