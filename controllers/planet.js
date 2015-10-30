@@ -8,7 +8,7 @@ if (process.env.REDISTOGO_URL) {
     var client = require("redis").createClient();
 }
 // Create endpoint /api/users for POST
-exports.createNewPlanet = function(req, res) {
+exports.createNewPlanet = function(req, res, next) {
   var planet = new Planet({
     name: req.body.name,
     description: req.body.description,
@@ -16,40 +16,36 @@ exports.createNewPlanet = function(req, res) {
     owner: req.user._id
   });
   planet.save(function(err) {
-    if (err)
-      res.json(err);
+    if(err) return next(err);
     res.json({ message: 'New planet added' });
   });
 };
 
-exports.getById = function(req, res) {
+exports.getById = function(req, res, next) {
   var planet_id = req.params.id;
   Planet.findOne({_id: planet_id}, function(err, planet) {
-    if (err)
-      res.json(err);
+    if(err) return next(err);
     res.json(planet);
   })
 };
-exports.deletePlanet = function(req, res) {
+exports.deletePlanet = function(req, res, next) {
   var planet_id = req.params.id;
   Planet.remove({_id: planet_id}, function(err, planet) {
-    if (err)
-      res.json(err);
+    if(err) return next(err);
     res.json({message: "Planet deleted OK!"});
   })
 };
 
-exports.search = function(req, res) {
+exports.search = function(req, res, next) {
   var partial_username = req.params.username.toLowerCase();;
   var query = {username: new RegExp('^'+partial_username, 'i')};
   Planet.find(query, function(err, users) {
-    if (err) 
-      res.json(err);
+    if(err) return next(err);
     res.json(users);
   });
 }
 
-exports.startFollowing = function(req, res) {
+exports.startFollowing = function(req, res, next) {
   var user_id = req.user._id;
   var planet_id = req.body.id;
   User.findByIdAndUpdate(
@@ -57,16 +53,14 @@ exports.startFollowing = function(req, res) {
     {$addToSet: {planets: planet_id}},
     {safe: false, upsert: true},
     function(err, model) {
-      if (err) 
-        res.json(err);
+      if(err) return next(err);
       res.json({message: 'Added planet'});
     }
   );
 };
-exports.getPlanets = function(req, res) {
+exports.getPlanets = function(req, res, next) {
   Planet.find(function(err, planets) {
-    if (err)
-      res.json(err);
+    if(err) return next(err);
     res.json(planets);
   });
 };
