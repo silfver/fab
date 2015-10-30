@@ -30,7 +30,7 @@ exports.register = function(req, res, next) {
     });
   });
   client.lpush(req.user._id+"_latest", req.body.cloudinary_id, function(err, size) {
-    if (size > 10) {client.rpop(image_owner+"_latest");}
+    if (size > 10) {client.rpop(req.user_id+"_latest");}
   });
   image.save(function(err) {
     if (err) next(err);
