@@ -1,5 +1,6 @@
 // Load required packages
 var Planet = require('../models/planet');
+var User = require('../models/user');
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
   var client = require("redis").createClient(rtg.port, rtg.hostname);

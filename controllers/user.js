@@ -131,23 +131,20 @@ exports.getNewFollowers = function(req, res) {
 }
 exports.startFollowing = function(req, res, next) {
   var user_id = req.user._id;
-  User.findOne({username: req.body.friend}, function(err, friend){
-    friend_id = friend._id;
-    if(err) return next(err);
-    User.findByIdAndUpdate(
-      friend_id,
-      {$addToSet: {friends: user_id}},
-      {safe: false, upsert: true},
-      function(err, model) {
+  var friend_id = req.body.friend;
+  User.findByIdAndUpdate(
+    friend_id,
+    {$addToSet: {friends: user_id}},
+    {safe: false, upsert: true},
+    function(err, model) {
+      if(err) return next(err);
+      client.lpush(friend_id+"_new_friends", user_id, function(err, reply) {
         if(err) return next(err);
-        client.lpush(friend_id+"_new_friends", user_id, function(err, reply) {
-          if(err) return next(err);
-          res.json({message: 'Started following OK!'});
-        });
-      }
-    );
-  });
-};
+        res.json({message: 'Started following OK!'});
+      });    
+    }
+  );
+}
 exports.getFollowing = function(req, res, next) {
   var user_id = req.user._id;
   User.find({friends: user_id}, function(err, following) {
