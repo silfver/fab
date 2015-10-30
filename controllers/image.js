@@ -12,7 +12,7 @@ if (process.env.REDISTOGO_URL) {
 } else {
     var client = require("redis").createClient();
 }
-exports.register = function(req, res) {
+exports.register = function(req, res, next) {
   bump_ranking(req.user._id, 3);
   var users = JSON.parse(req.body.users);
   var image = new Image({
@@ -25,35 +25,25 @@ exports.register = function(req, res) {
   });
   users.forEach(function(user) {
     client.lpush(user+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
-      if (err) {
-        console.log(err); // silently fail and log here
-      }
+      if (err) console.log(err); // silently fail and log here
     });
   });
   client.lpush(req.user._id+"_latest", req.body.cloudinary_id, function(err, size) {
     if (size > 10) {client.rpop(image_owner+"_latest");}
   });
   image.save(function(err) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json({ message: 'Image registered OK' });
-    }
+    if (err) next(err);
+    res.json({ message: 'Image registered OK' });
   });
 };  
-exports.get = function(req, res) {
+exports.get = function(req, res, next) {
   var image_id = req.params.id;
   Image.findOne({cloudinary_id: image_id}, function(err, image) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json(image);      
-    }
+    if (err) next(err);
+    res.json(image);      
   })
 }
-exports.react = function(req, res) {
+exports.react = function(req, res, next) {
   var image_id = req.body.cloudinary_id;
   bump_ranking(req.user._id, 1);
   Image.findOne({cloudinary_id: image_id}, function(err, image) {
@@ -65,13 +55,9 @@ exports.react = function(req, res) {
       if (size > 10) {client.rpop(image_owner+"_reactions");}
     });
     client.lpush(image_id, JSON.stringify([reaction_user_id, reaction_message]), function(err, size) {
-      if (err) {
-        res.json(err);        
-      }
-      else {
-        if (size > 20) {client.rpop(image_id);}
-        res.json({message: 'Reaction sent OK!'});        
-      }
+      if (err) next(err);
+      if (size > 20) {client.rpop(image_id);}
+      res.json({message: 'Reaction sent OK!'});        
     });
 
   });
@@ -92,23 +78,16 @@ exports.getReactionList = function(req, res) {
 }
 exports.getAvailableReactions = function(req, res) {
   fs.readFile('reactions.json', 'utf8', function (err, data) {
-    if (err) {
-      res.json(err);
-    } else {
-      available_reactions = JSON.parse(data);
-      var reactions = available_reactions[Math.floor(Math.random() * 23)];
-      res.json(reactions);      
-    }
+    if (err) next(err);
+    available_reactions = JSON.parse(data);
+    var reactions = available_reactions[Math.floor(Math.random() * 23)];
+    res.json(reactions);      
   })
 }
 exports.getAll = function(req, res) {
   Image.find(function(err, images) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json(images);
-    }
+    if (err) next(err);
+    res.json(images);
   });
 }
 exports.getHash = function(req, res) {

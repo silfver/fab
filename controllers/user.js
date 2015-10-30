@@ -23,18 +23,14 @@ exports.createNewUser = function(req, res, next) {
     res.json({ message: 'New user added' });
   });
 };
-exports.getMe = function(req, res) {
+exports.getMe = function(req, res, next) {
   var userId = req.user._id;
   User.findOne({_id: userId}, function(err, user) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json(user);
-    }
+    if(err) return next(err);
+    res.json(user);
   })
 };
-exports.checkUsernameAvailable = function(req, res) {
+exports.checkUsernameAvailable = function(req, res, next) {
   var username = req.params.username;
   User.findOne({ username: username }, function (err, user) {
     if (!user)
@@ -43,81 +39,65 @@ exports.checkUsernameAvailable = function(req, res) {
       res.json({message: "Username not available"}); 
   });
 }
-exports.getById = function(req, res) {
+exports.getById = function(req, res, next) {
   var userId = req.params.id;
   User.findOne({_id: userId}, function(err, user) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json(user);
-    }
+    if(err) return next(err);
+    res.json(user);
   })
 };
-exports.deleteUser = function(req, res) {
+exports.deleteUser = function(req, res, next) {
   var userId = req.user._id;
   User.remove({_id: userId}, function(err, user) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json({"message": "User deleted OK!"});
-    }
+    if(err) return next(err);
+    res.json({"message": "User deleted OK!"});
   })
 };
-exports.deleteFollower = function(req, res) {
+exports.deleteFollower = function(req, res, next) {
   var userId = req.user._id;
   var friendUserId = req.params.id;
   User.findByIdAndUpdate(userId, {
     $pull: {"friends": friendUserId}
   }, function(err, user) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json({"message": "Follower deleted OK!"});
-    }
+    if(err) return next(err);
+    res.json({"message": "Follower deleted OK!"});
   });
 }
-exports.stopFollowing = function(req, res) {
+exports.stopFollowing = function(req, res, next) {
   var userId = req.user._id;
   var friendUserId = req.params.id;
   User.findByIdAndUpdate(friendUserId, {
     $pull: {"friends": userId}
   }, function(err, user) {
-    if (err) 
-      res.json(err);
+    if(err) return next(err);
     res.json({"message": "Stopped following OK!"});
   });
 }
-exports.updateProfileImage = function(req, res) {
+exports.updateProfileImage = function(req, res, next) {
   var userId = req.user._id;
   var cloudinary_id = req.params.id;
   User.findByIdAndUpdate(userId, {
     $set: {"profile_picture": cloudinary_id}
   }, function(err, user) {
-    if (err) 
-      res.json(err);
+    if(err) return next(err);
     res.json({"message": "Profile picture updated!"});
   });
 }
-exports.updateProfileImage = function(req, res) {
+exports.updateProfileImage = function(req, res, next) {
   var userId = req.user._id;
   var cloudinary_id = req.params.id;
   User.findByIdAndUpdate(userId, {
     $set: {"background_picture": cloudinary_id}
   }, function(err, user) {
-    if (err) 
-      res.json(err);
+    if(err) return next(err);
     res.json({"message": "Background picture updated!"});
   });
 }
-exports.search = function(req, res) {
+exports.search = function(req, res, next) {
   var partial_username = req.params.username.toLowerCase();;
   var query = {username: new RegExp('^'+partial_username, 'i')};
   User.find(query, function(err, users) {
-    if (err) 
-      res.json(err);
+    if(err) return next(err);
     res.json(users);
   });
 }
@@ -141,60 +121,42 @@ exports.getNewFollowers = function(req, res) {
   });
   client.del(user_id+"_new_friends");
 }
-exports.startFollowing = function(req, res) {
+exports.startFollowing = function(req, res, next) {
   var user_id = req.user._id;
   User.findOne({username: req.body.friend}, function(err, friend){
     friend_id = friend._id;
-    if (err)
-      res.json(err);
+    if(err) return next(err);
     User.findByIdAndUpdate(
       friend_id,
       {$addToSet: {friends: user_id}},
       {safe: false, upsert: true},
       function(err, model) {
-        if (err) 
-          res.json(err);
+        if(err) return next(err);
         client.lpush(friend_id+"_new_friends", user_id, function(err, reply) {
-          if (err) {
-            res.json(err);            
-          }
-          else {
-            res.json({message: 'Started following OK!'});
-          }
+          if(err) return next(err);
+          res.json({message: 'Started following OK!'});
         });
       }
     );
   });
 };
-exports.getFollowing = function(req, res) {
+exports.getFollowing = function(req, res, next) {
   var user_id = req.user._id;
   User.find({friends: user_id}, function(err, following) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json(following);
-    }
+    if(err) return next(err);
+    res.json(following);
   })
 }
-exports.getPlanets = function(req, res) {
+exports.getPlanets = function(req, res, next) {
   var user_id = req.user._id;
   User.findOne({_id: user_id}, function(err, user) {
-    if (err) {
-      res.json(err);      
-    }
-    else {  
-      res.json(user.planets);      
-    }
+    if(err) return next(err);
+    res.json(user.planets);      
   })
 }
-exports.getUsers = function(req, res) {
+exports.getUsers = function(req, res, next) {
   User.find(function(err, users) {
-    if (err) {
-      res.json(err);      
-    }
-    else {
-      res.json(users);      
-    }
+    if(err) return next(err);
+    res.json(users);      
   });
 };
