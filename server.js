@@ -50,6 +50,8 @@ router.route('/image/reactions_list')
     .get(authController.isAuthenticated, imageController.getReactionList);
 router.route('/user/following/')
     .get(authController.isAuthenticated, userController.getFollowing);  
+router.route('/user/followers/')
+    .get(authController.isAuthenticated, userController.getFollowers);  
 router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
 router.route('/user/unseen_images')

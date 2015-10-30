@@ -152,6 +152,15 @@ exports.getFollowing = function(req, res, next) {
     res.json(following);
   })
 }
+exports.getFollowers = function(req, res, next) {
+  var user_id = req.user._id;
+  User.findOne({ _id: user_id })
+  .populate('friends')
+  .exec(function (err, user) {
+    if (err) next(err);
+    res.json(user)
+  });
+}
 exports.getPlanets = function(req, res, next) {
   var user_id = req.user._id;
   User.findOne({_id: user_id}, function(err, user) {
