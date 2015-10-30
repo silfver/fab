@@ -19,17 +19,23 @@ exports.createNewUser = function(req, res) {
     email: req.body.email
   });
   user.save(function(err) {
-    if (err)
-      res.json(err);
-    res.json({ message: 'New user added' });
+    if (err) {
+      res.json(err);  
+      console.log(err);
+    } else {
+      res.json({ message: 'New user added' });
+    }
   });
 };
 exports.getMe = function(req, res) {
   var userId = req.user._id;
   User.findOne({_id: userId}, function(err, user) {
-    if (err)
-      res.json(err);
-    res.json(user);
+    if (err) {
+      res.json(err);      
+    }
+    else {
+      res.json(user);
+    }
   })
 };
 exports.checkUsernameAvailable = function(req, res) {
@@ -44,28 +50,37 @@ exports.checkUsernameAvailable = function(req, res) {
 exports.getById = function(req, res) {
   var userId = req.params.id;
   User.findOne({_id: userId}, function(err, user) {
-    if (err)
-      res.json(err);
-    res.json(user);
+    if (err) {
+      res.json(err);      
+    }
+    else {
+      res.json(user);
+    }
   })
 };
 exports.deleteUser = function(req, res) {
   var userId = req.user._id;
   User.remove({_id: userId}, function(err, user) {
-    if (err)
-      res.json(err);
-    res.json({message: "User deleted OK!"});
+    if (err) {
+      res.json(err);      
+    }
+    else {
+      res.json({"message": "User deleted OK!"});
+    }
   })
 };
-exports.deleteFriend = function(req, res) {
+exports.deleteFollower = function(req, res) {
   var userId = req.user._id;
   var friendUserId = req.params.id;
   User.findByIdAndUpdate(userId, {
     $pull: {"friends": friendUserId}
   }, function(err, user) {
-    if (err) 
-      res.json(err);
-    res.json({"message": "Friend removed OK!"});
+    if (err) {
+      res.json(err);      
+    }
+    else {
+      res.json({"message": "Follower deleted OK!"});
+    }
   });
 }
 exports.stopFollowing = function(req, res) {
@@ -144,9 +159,12 @@ exports.startFollowing = function(req, res) {
         if (err) 
           res.json(err);
         client.lpush(friend_id+"_new_friends", user_id, function(err, reply) {
-          if (err)
-            res.json(err);
-          res.json({message: 'Added friends'});
+          if (err) {
+            res.json(err);            
+          }
+          else {
+            res.json({message: 'Started following OK!'});
+          }
         });
       }
     );
@@ -155,23 +173,32 @@ exports.startFollowing = function(req, res) {
 exports.getFollowing = function(req, res) {
   var user_id = req.user._id;
   User.find({friends: user_id}, function(err, following) {
-    if (err)
-      res.json(err);
-    res.json(following);
+    if (err) {
+      res.json(err);      
+    }
+    else {
+      res.json(following);
+    }
   })
 }
 exports.getPlanets = function(req, res) {
   var user_id = req.user._id;
   User.findOne({_id: user_id}, function(err, user) {
-    if (err)
-      res.json(err);
-    res.json(user.planets);
+    if (err) {
+      res.json(err);      
+    }
+    else {  
+      res.json(user.planets);      
+    }
   })
 }
 exports.getUsers = function(req, res) {
   User.find(function(err, users) {
-    if (err)
-      res.json(err);
-    res.json(users);
+    if (err) {
+      res.json(err);      
+    }
+    else {
+      res.json(users);      
+    }
   });
 };

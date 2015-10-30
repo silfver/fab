@@ -67,8 +67,8 @@ router.route('/user/followers/new/')
     .get(authController.isAuthenticated, userController.getNewFollowers);          
 router.route('/user/remove/')
     .delete(authController.isAuthenticated, userController.deleteUser);
-router.route('/user/remove_friend/:id')
-    .delete(authController.isAuthenticated, userController.deleteFriend);
+router.route('/user/remove_follower/:id')
+    .delete(authController.isAuthenticated, userController.deleteFollower);
 router.route('/user/stop_following/:id')
     .delete(authController.isAuthenticated, userController.stopFollowing);
 router.route('/users/search/:username')
