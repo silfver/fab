@@ -92,6 +92,8 @@ router.route('/reactions')
     .get(imageController.getAvailableReactions);
 router.route('/planet/new')
     .post(authController.isAuthenticated, planetController.createNewPlanet);
+router.route('/planet/:id')
+    .get(authController.isAuthenticated, planetController.getById);
 router.route('/planets/')
     .get(authController.isAuthenticated, planetController.getPlanets);
 
