@@ -33,7 +33,7 @@ exports.register = function(req, res, next) {
     if (size > 10) {client.rpop(req.user_id+"_latest");}
   });
   client.lpush(req.body.planet_id+"_planet_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
-    if (size > 10) {client.rpop(req.body.planet_id+"_planet_latest");}
+    if (size > 20) {client.rpop(req.body.planet_id+"_planet_latest");}
   });
   image.save(function(err) {
     if (err) next(err);
@@ -42,10 +42,13 @@ exports.register = function(req, res, next) {
 };  
 exports.get = function(req, res, next) {
   var image_id = req.params.id;
-  Image.findOne({cloudinary_id: image_id}, function(err, image) {
+  Image.findOne({ cloudinary_id: image_id })
+  .populate('by')
+  .populate('planet')
+  .exec(function (err, image) {
     if (err) next(err);
-    res.json(image);      
-  })
+    res.json(image);
+  });
 }
 exports.react = function(req, res, next) {
   var image_id = req.body.cloudinary_id;
