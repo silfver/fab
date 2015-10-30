@@ -8,7 +8,7 @@ if (process.env.REDISTOGO_URL) {
     var client = require("redis").createClient();
 }
 // Create endpoint /api/users for POST
-exports.createNewUser = function(req, res) {
+exports.createNewUser = function(req, res, next) {
   var user = new User({
     username: req.body.username,
     password: req.body.password,
@@ -19,12 +19,8 @@ exports.createNewUser = function(req, res) {
     email: req.body.email
   });
   user.save(function(err) {
-    if (err) {
-      res.json(err);  
-      console.log(err);
-    } else {
-      res.json({ message: 'New user added' });
-    }
+    if(err) return next(err);
+    res.json({ message: 'New user added' });
   });
 };
 exports.getMe = function(req, res) {

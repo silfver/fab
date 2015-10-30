@@ -18,7 +18,6 @@ var authController = require('./controllers/auth');
 var imageController = require('./controllers/image');
 var planetController = require('./controllers/planet');
 
-
 mongoose.connect(process.env.MONGOLAB_URI);
 var router = express.Router();
 
@@ -29,13 +28,17 @@ app.use(cors());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-
 cloudinary.config({ 
     cloud_name: cloudinary_vars.hostname, 
     api_key: cloudinary_vars.auth.split(':')[0], 
     api_secret: cloudinary_vars.auth.split(':')[1]
 });
 // cloudinary.api.delete_all_resources(function(result){});
+// generic error handling
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
 
 router.route('/user/new')
     .post(userController.createNewUser);
