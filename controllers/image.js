@@ -21,7 +21,8 @@ exports.register = function(req, res, next) {
     reactions: [],
     hashtag: req.body.hashtag,
     planet: req.body.planet_id,
-    filter: req.body.filter
+    filter: req.body.filter,
+    link: req.body.link
   });
   users.forEach(function(user) {
     client.lpush(user+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
