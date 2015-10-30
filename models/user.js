@@ -18,7 +18,11 @@ var UserSchema = new mongoose.Schema({
     postal_no: String,
     profile_picture: String,
     background_picture: String,
-    email: String,
+    email: {
+      type: String,
+      required: true,
+      unique: true  
+    },
     ranking: Number,
     planets: [{ type: Schema.Types.ObjectId, ref: 'Planet' }],
     friends: [{ type: Schema.Types.ObjectId, ref: 'User' }]
