@@ -1,6 +1,9 @@
 // Load required packages
 var User = require('../models/user');
 var Planet = require('../models/planet');
+var nodemailer = require('nodemailer');
+var mg = require('nodemailer-mailgun-transport');
+var crypto = require('crypto');
 
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
@@ -176,3 +179,48 @@ exports.getUsers = function(req, res, next) {
     res.json(users);      
   });
 };
+exports.forgotPassword = function(req, res, next) {
+  crypto.randomBytes(20, function(err, buf) {
+    var token = buf.toString('hex');
+    User.findOne({ email: req.body.email }, function(err, user) {
+      if (!user) {
+        return next("No such user exists");
+      }
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 3600000;
+      user.save(function(err) {
+        if (err) return next(err);
+        var auth = {
+          auth: {
+            api_key: process.env.MAILGUN_KEY,
+            domain: process.env.MAILGUN_DOMAIN
+          }
+        }
+        var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+        nodemailerMailgun.sendMail({
+          to: user.email,
+          from: 'passwordreset@worldoffab.com',
+          subject: 'Reset your Fab! password',
+          text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+            'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+            'fab://reset/' + token + '\n\n' +
+            'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+        },
+        function(err, info) {
+          if (err) return next(err);
+          res.json("Password reset email sent");
+        });
+      });
+    });
+  });
+}
+exports.resetPassword = function(req, res, next) {
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+    if (err) return next(err);
+    if (!user) {
+      res.json('Password reset token is invalid or has expired.');
+      return next("no password");
+    }
+    res.json(user);
+  });
+}

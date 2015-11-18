@@ -55,7 +55,11 @@ router.route('/user/followers/')
 router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
 router.route('/user/unseen_images')
-    .get(authController.isAuthenticated, userController.getUnseenImages);  
+    .get(authController.isAuthenticated, userController.getUnseenImages);
+router.route('/user/forgot_password')
+    .post(userController.forgotPassword);
+router.route('/user/reset/:token')
+    .post(userController.resetPassword); 
 router.route('/user/start_following')
     .put(authController.isAuthenticated, userController.startFollowing);
 router.route('/user/planets')

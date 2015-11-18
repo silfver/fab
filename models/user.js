@@ -25,7 +25,9 @@ var UserSchema = new mongoose.Schema({
     },
     ranking: Number,
     planets: [{ type: Schema.Types.ObjectId, ref: 'Planet' }],
-    friends: [{ type: Schema.Types.ObjectId, ref: 'User' }]
+    friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
   });
 
 UserSchema.methods.verifyPassword = function(password, cb) {
