@@ -102,7 +102,7 @@ exports.search = function(req, res, next) {
   var total_return = [];
   var partial_username = req.params.username.toLowerCase();;
   var query = {username: new RegExp('^'+partial_username, 'i')};
-  var planetQuery = {name: new RegExp('^'+partial_username, 'i')};
+  var planetQuery = {name: new RegExp(partial_username, 'i')};
   User.find(query, function(err, users) {
     if(err) return next(err);
     Planet.find(planetQuery, function(err, planets) {
