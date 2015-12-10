@@ -182,6 +182,7 @@ exports.getUsers = function(req, res, next) {
 exports.forgotPassword = function(req, res, next) {
   crypto.randomBytes(20, function(err, buf) {
     var token = buf.toString('hex');
+    console.log(req.body.email);
     User.findOne({ email: req.body.email }, function(err, user) {
       if (!user) {
         return next("No such user exists");
