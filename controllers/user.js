@@ -217,6 +217,7 @@ exports.forgotPassword = function(req, res, next) {
 }
 exports.resetPassword = function(req, res, next) {
   User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+    console.log(user);
     if (err) return next(err);
     if (!user) {
       res.json('Password reset token is invalid or has expired.');
