@@ -221,6 +221,12 @@ exports.resetPassword = function(req, res, next) {
       res.json('Password reset token is invalid or has expired.');
       return next("no password");
     }
-    res.json(user);
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    user.save(function(err) {
+      if(err) return next(err);
+      res.json({"message": "User changed password"});
+    });
   });
 }

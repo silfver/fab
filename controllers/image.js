@@ -20,6 +20,7 @@ exports.register = function(req, res, next) {
     by: req.user._id,
     reactions: [],
     hashtag: req.body.hashtag,
+    hashtag_height: req.body.hashtag_height,
     planet: req.body.planet_id,
     filter: req.body.filter,
     link: req.body.link

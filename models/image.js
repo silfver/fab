@@ -11,6 +11,7 @@ var ImageSchema = new mongoose.Schema({
     users: [{type: Schema.Types.ObjectId, ref: 'User'}],
     planet: {type: Schema.Types.ObjectId, ref: 'Planet'},
     hashtag: String,
+    hashtag_height: Number,
     filter: String,
     link: String
 });
