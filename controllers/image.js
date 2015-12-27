@@ -40,7 +40,15 @@ exports.register = function(req, res, next) {
     if (err) next(err);
     res.json({ message: 'Image registered OK' });
   });
-};  
+};
+exports.getUnseenReactionsNumber = function(req, res, next) {
+  var userId = req.user._id;
+  client.get(userId+"_number_of_unseen_reactions", function(err, reply) {
+    if (err) next(err);
+    client.set(userId+"_number_of_unseen_reactions", 0);
+    res.json(reply);
+  });
+}
 exports.get = function(req, res, next) {
   var image_id = req.params.id;
   Image.findOne({ cloudinary_id: image_id })
@@ -62,6 +70,7 @@ exports.react = function(req, res, next) {
     client.lpush(image_owner+"_reactions", JSON.stringify([reaction_user_id, image_id, reaction_message, filter]), function(err, size) {
       if (size > 10) {client.rpop(image_owner+"_reactions");}
     });
+    client.incr(image_owner+"_number_of_unseen_reactions");
     client.lpush(image_id, JSON.stringify([reaction_user_id, reaction_message]), function(err, size) {
       if (err) next(err);
       if (size > 20) {client.rpop(image_id);}

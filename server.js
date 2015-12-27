@@ -48,6 +48,8 @@ router.route('/users')
     .get(authController.isAuthenticated, userController.getUsers);
 router.route('/image/reactions_list')
     .get(authController.isAuthenticated, imageController.getReactionList);
+router.route('/image/unseen_reactions_number')
+    .get(authController.isAuthenticated, imageController.getUnseenReactionsNumber);
 router.route('/user/following/')
     .get(authController.isAuthenticated, userController.getFollowing);  
 router.route('/user/followers/')
