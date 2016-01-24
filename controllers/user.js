@@ -117,7 +117,12 @@ exports.getUnseenImages = function(req, res) {
   client.lrange(user_id+"_unseen", 0, -1, function(err, reply) {
     res.json(JSON.stringify(reply));
   });
-  client.del(user_id+"_unseen");
+}
+exports.getNextUnseenImage = function(req, res) {
+  var user_id = req.user._id;
+  client.lpop(user_id+"_unseen", function(err, reply) {
+    res.json(reply);
+  });
 }
 exports.getLatestImage = function(req, res) {
   var user_id = req.user._id;

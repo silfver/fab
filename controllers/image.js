@@ -61,7 +61,8 @@ exports.get = function(req, res, next) {
 }
 exports.react = function(req, res, next) {
   var image_id = req.body.cloudinary_id;
-  bump_ranking(req.user._id, 1);
+  var user_id = req.user._id;
+  bump_ranking(user_id, 1);
   Image.findOne({cloudinary_id: image_id}, function(err, image) {
     var image_owner = image.by;
     var reaction_user_id = req.user._id;
@@ -97,7 +98,7 @@ exports.getAvailableReactions = function(req, res) {
   fs.readFile('reactions.json', 'utf8', function (err, data) {
     if (err) next(err);
     available_reactions = JSON.parse(data);
-    var reactions = available_reactions[Math.floor(Math.random() * 23)];
+    var reactions = available_reactions[Math.floor(Math.random() * 22)];
     res.json(reactions);      
   })
 }
