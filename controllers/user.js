@@ -112,6 +112,7 @@ exports.search = function(req, res, next) {
     });  
   });
 }
+// Soon to be deprecated due to getNextUnseenImage superceding this functionality
 exports.getUnseenImages = function(req, res) {
   var user_id = req.user._id;
   client.lrange(user_id+"_unseen", 0, -1, function(err, reply) {

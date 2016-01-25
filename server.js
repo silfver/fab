@@ -96,6 +96,8 @@ router.route('/image/react')
     .post(authController.isAuthenticated, imageController.react);
 router.route('/image/reactions/:id')
     .get(authController.isAuthenticated, imageController.getReactions);
+router.route('/image/:id')
+    .delete(authController.isAuthenticated, imageController.delete);
 router.route('/images')
     .get(authController.isAuthenticated, imageController.getAll);
 router.route('/reactions')

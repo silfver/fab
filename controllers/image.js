@@ -114,6 +114,15 @@ exports.getHash = function(req, res) {
   shasum.update(string);
   res.json(shasum.digest('hex'));
 }
+exports.delete = function(req, res) {
+  var image_id = req.params.id;
+  var userId = req.user._id;
+  Image.remove({cloudinary_id: image_id }, function(err) {
+    client.rem(userId+"_reactions")
+    if (err) next(err);
+    res.json({message: "Image removed OK!"});
+  });
+}
 
 function bump_ranking(userId, amount) {
   User.findByIdAndUpdate(userId, {
