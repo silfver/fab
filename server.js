@@ -71,7 +71,7 @@ router.route('/user/:id')
 router.route('/user/profile_image/:id')
     .put(authController.isAuthenticated, userController.updateProfileImage);      
 router.route('/user/background_image/:id')
-    .put(authController.isAuthenticated, userController.updateProfileImage);      
+    .put(authController.isAuthenticated, userController.updateBackgroundImage);      
 router.route('/user/image/latest/')
     .get(authController.isAuthenticated, userController.getLatestImage);     
 router.route('/user/image/unseen/')

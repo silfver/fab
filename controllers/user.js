@@ -88,7 +88,7 @@ exports.updateProfileImage = function(req, res, next) {
     res.json({"message": "Profile picture updated!"});
   });
 }
-exports.updateProfileImage = function(req, res, next) {
+exports.updateBackgroundImage = function(req, res, next) {
   var userId = req.user._id;
   var cloudinary_id = req.params.id;
   User.findByIdAndUpdate(userId, {
