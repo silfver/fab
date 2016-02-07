@@ -236,3 +236,29 @@ exports.resetPassword = function(req, res, next) {
     });
   });
 }
+exports.invite = function(req, res, next) {
+  var user_id = req.user._id;
+  var message = req.body.message;
+  var email = req.body.email;
+  var auth = {
+        auth: {
+          api_key: process.env.MAILGUN_KEY,
+          domain: process.env.MAILGUN_DOMAIN
+        }
+      }
+      var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+      User.findOne({_id: user_id}, function(err, user) {
+        if(err) return next(err);
+        nodemailerMailgun.sendMail({
+        to: email,
+        from: 'invite@worldoffab.com',
+        subject: user.username+' wants to invite you to World of Fab!',
+        html: message+'\n\n' +
+          'Go to Google Play or App store and download the app to get started!\n\n'
+        },
+        function(err, info) {
+          if (err) return next(err);
+          res.json("Invite email sent");
+        });
+      });
+}

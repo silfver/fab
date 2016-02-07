@@ -21,7 +21,6 @@ exports.register = function(req, res, next) {
     reactions: [],
     hashtag: req.body.hashtag,
     hashtag_height: req.body.hashtag_height,
-    planet: req.body.planet_id,
     filter: req.body.filter,
     link: req.body.link
   });
@@ -32,9 +31,6 @@ exports.register = function(req, res, next) {
   });
   client.lpush(req.user._id+"_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
     if (size > 10) {client.rpop(req.user_id+"_latest");}
-  });
-  client.lpush(req.body.planet_id+"_planet_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
-    if (size > 20) {client.rpop(req.body.planet_id+"_planet_latest");}
   });
   image.save(function(err) {
     if (err) next(err);
@@ -53,7 +49,6 @@ exports.get = function(req, res, next) {
   var image_id = req.params.id;
   Image.findOne({ cloudinary_id: image_id })
   .populate('by')
-  .populate('planet')
   .exec(function (err, image) {
     if (err) next(err);
     res.json(image);
