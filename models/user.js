@@ -18,6 +18,7 @@ var UserSchema = new mongoose.Schema({
     postal_no: String,
     profile_picture: String,
     background_picture: String,
+    bio: String,
     email: {
       type: String,
       required: true,

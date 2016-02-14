@@ -116,7 +116,8 @@ router.route('/planets/')
     .get(authController.isAuthenticated, planetController.getPlanets);
 router.route('/invite/')
     .post(authController.isAuthenticated, userController.invite);
-
+router.route('/user/bio')
+    .post(authController.isAuthenticated, userController.updateBio);
 
 app.use('/api', router);
 

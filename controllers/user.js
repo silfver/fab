@@ -180,6 +180,16 @@ exports.getUsers = function(req, res, next) {
     res.json(users);      
   });
 };
+exports.updateBio = function(req, res, next) {
+  var userId = req.user._id;
+  var bio_text = req.body.bio;
+  User.findByIdAndUpdate(userId, {
+    $set: {"bio": bio_text}
+  }, function(err, user) {
+    if(err) return next(err);
+    res.json({"message": "Bio updated!"});
+  });
+}
 exports.forgotPassword = function(req, res, next) {
   crypto.randomBytes(20, function(err, buf) {
     var token = buf.toString('hex');
