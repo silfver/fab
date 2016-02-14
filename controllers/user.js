@@ -19,6 +19,7 @@ exports.createNewUser = function(req, res, next) {
     password: req.body.password,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
+    ranking: 0,
     postal_no: req.body.postal_no,
     profile_picture: req.body.profile_picture,
     email: req.body.email
@@ -99,17 +100,11 @@ exports.updateBackgroundImage = function(req, res, next) {
   });
 }
 exports.search = function(req, res, next) {
-  var total_return = [];
   var partial_username = req.params.username.toLowerCase();;
   var query = {username: new RegExp('^'+partial_username, 'i')};
-  var planetQuery = {name: new RegExp(partial_username, 'i')};
-  User.find(query, function(err, users) {
+  User.find({$query: query, $orderby: { ranking : -1 }}, function(err, users) {
     if(err) return next(err);
-    Planet.find(planetQuery, function(err, planets) {
-      if(err) return next(err);
-      total_return = users.concat(planets);
-      res.json(total_return);
-    });  
+    res.json(users);
   });
 }
 // Soon to be deprecated due to getNextUnseenImage superceding this functionality
