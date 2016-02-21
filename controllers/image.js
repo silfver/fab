@@ -63,6 +63,9 @@ exports.react = function(req, res, next) {
     var reaction_user_id = req.user._id;
     var reaction_message = req.body.reaction_message;
     var filter = image.filter;
+    client.lrem(user_id+"_unseen", 0, JSON.stringify([image_id, image.filter]), function(err) {
+      if(err) next(err);
+    });
     client.lpush(image_owner+"_reactions", JSON.stringify([reaction_user_id, image_id, reaction_message, filter]), function(err, size) {
       if (size > 10) {client.rpop(image_owner+"_reactions");}
     });
