@@ -107,13 +107,19 @@ exports.search = function(req, res, next) {
     res.json(users);
   });
 }
-// Soon to be deprecated due to getNextUnseenImage superceding this functionality
 exports.getUnseenImages = function(req, res) {
   var user_id = req.user._id;
   client.lrange(user_id+"_unseen", 0, -1, function(err, reply) {
     res.json(JSON.stringify(reply));
   });
 }
+exports.getUnseenPlanetImages = function(req, res) {
+  var user_id = req.user._id;
+  client.lrange(user_id+"_planet_unseen", 0, -1, function(err, reply) {
+    res.json(JSON.stringify(reply));
+  });
+}
+// soon to be deprecated but keeping to make sure old apps work
 exports.getNextUnseenImage = function(req, res) {
   var user_id = req.user._id;
   client.lpop(user_id+"_unseen", function(err, reply) {
@@ -165,13 +171,19 @@ exports.getFollowers = function(req, res, next) {
     res.json(user)
   });
 }
+exports.getReactionList = function(req, res) {
+  var userId = req.user._id;
+  var reactions = [];
+  client.lrange(userId+"_reactions_v2", 0, -1, function(err, reply) {
+    res.json(reply);
+  });
+}
 exports.getPlanets = function(req, res, next) {
   var user_id = req.user._id;
-  User.findOne({ _id: user_id })
-  .populate('planets')
-  .exec(function (err, user) {
+  Planet.find({followers: user_id })
+  .exec(function (err, planets) {
     if (err) next(err);
-    res.json(user.planets)
+    res.json(planets)
   });
 }
 exports.getUsers = function(req, res, next) {

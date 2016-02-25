@@ -25,7 +25,6 @@ var UserSchema = new mongoose.Schema({
       unique: true  
     },
     ranking: Number,
-    planets: [{ type: Schema.Types.ObjectId, ref: 'Planet' }],
     friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     resetPasswordToken: String,
     resetPasswordExpires: Date

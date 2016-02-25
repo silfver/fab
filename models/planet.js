@@ -5,7 +5,8 @@ var PlanetSchema = new mongoose.Schema({
     name: String,
     description: String,
     image: String,
-    owner: {type: Schema.Types.ObjectId, ref: 'User'}
+    owner: {type: Schema.Types.ObjectId, ref: 'User'},
+    followers: [{ type: Schema.Types.ObjectId, ref: 'User'}]
 });
 
 module.exports = mongoose.model('Planet', PlanetSchema);

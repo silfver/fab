@@ -49,9 +49,9 @@ exports.search = function(req, res, next) {
 exports.startFollowing = function(req, res, next) {
   var user_id = req.user._id;
   var planet_id = req.body.id;
-  User.findByIdAndUpdate(
-    user_id,
-    {$addToSet: {planets: planet_id}},
+  Planet.update(
+    planet_id,
+    {$addToSet: {followers: user_id}},
     {safe: false, upsert: true},
     function(err, model) {
       if(err) return next(err);
@@ -62,8 +62,8 @@ exports.startFollowing = function(req, res, next) {
 exports.stopFollowing = function(req, res, next) {
   var userId = req.user._id;
   var planet_id = req.params.id;
-  User.findByIdAndUpdate(userId, {
-    $pull: {planets: planet_id}
+  Planet.findByIdAndUpdate(planet_id, {
+    $pull: {followers: userId}
   }, function(err, user) {
     if(err) return next(err);
     res.json({"message": "Stopped following OK!"});

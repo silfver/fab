@@ -4,6 +4,8 @@ var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
 var crypto = require('crypto');
 var Image = require('../models/image');
 var User = require('../models/user');
+var Planet = require('../models/planet');
+var ObjectId = require('mongoose').Types.ObjectId;
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
   var client = require("redis").createClient(rtg.port, rtg.hostname);
@@ -15,6 +17,7 @@ if (process.env.REDISTOGO_URL) {
 exports.register = function(req, res, next) {
   bump_ranking(req.user._id, 3);
   var users = JSON.parse(req.body.users);
+  var planets = JSON.parse(req.body.planets);
   var image = new Image({
     cloudinary_id: req.body.cloudinary_id,
     by: req.user._id,
@@ -24,11 +27,26 @@ exports.register = function(req, res, next) {
     filter: req.body.filter,
     link: req.body.link
   });
+  // send out to the planets!
+  planets.forEach(function(planet_id){
+    Planet.findOne({_id: planet_id}, function(err, planet) {
+      if(err) return next(err);
+      planet.followers.forEach(function(follower){
+        if (follower !== null && (follower !== req.user._id)) {   // don't add to current users own queue
+          client.lpush(follower+"_planet_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
+            if (err) console.log(err); // silently fail and log here
+          });          
+        }
+      });
+    });
+  });
+  // send out to users!
   users.forEach(function(user) {
     client.lpush(user+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
       if (err) console.log(err); // silently fail and log here
     });
   });
+  // add to users' own latest images
   client.lpush(req.user._id+"_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
     if (size > 10) {client.rpop(req.user_id+"_latest");}
   });
@@ -54,6 +72,35 @@ exports.get = function(req, res, next) {
     res.json(image);
   });
 }
+exports.react_v2 = function(req, res, next) {
+  var image_id = req.body.cloudinary_id;
+  var user_id = req.user._id;
+  bump_ranking(user_id, 1);
+  Image.findOne({cloudinary_id: image_id}, function(err, image) {
+    var image_owner = image.by;
+    var reaction_message = req.body.reaction_message;
+    var reaction_username = req.body.username;
+    var reaction_profile_picture = req.body.profile_picture;
+    var filter = image.filter;
+    client.lrem(user_id+"_unseen", 0, JSON.stringify([image_id, image.filter]), function(err) {
+      if(err) next(err);
+    });
+    client.lrem(user_id+"_planet_unseen", 0, JSON.stringify([image_id, image.filter]), function(err) {
+      if(err) next(err);
+    });
+    client.lpush(image_owner+"_reactions_v2", JSON.stringify([reaction_username, reaction_profile_picture, image_id, reaction_message, filter]), function(err, size) {
+      if (size > 10) {client.rpop(image_owner+"_reactions_v2");}
+    });
+    client.incr(image_owner+"_number_of_unseen_reactions");
+    client.lpush(image_id+"_image_reactions", JSON.stringify([reaction_username, reaction_profile_picture, reaction_message]), function(err, size) {
+      if (err) next(err);
+      if (size > 20) {client.rpop(image_id);}
+      res.json({message: 'Reaction sent OK!'});        
+    });
+  });
+}
+// Legacy version of reactions
+
 exports.react = function(req, res, next) {
   var image_id = req.body.cloudinary_id;
   var user_id = req.user._id;
@@ -66,6 +113,9 @@ exports.react = function(req, res, next) {
     client.lrem(user_id+"_unseen", 0, JSON.stringify([image_id, image.filter]), function(err) {
       if(err) next(err);
     });
+    client.lrem(user_id+"_planet_unseen", 0, JSON.stringify([image_id, image.filter]), function(err) {
+      if(err) next(err);
+    });
     client.lpush(image_owner+"_reactions", JSON.stringify([reaction_user_id, image_id, reaction_message, filter]), function(err, size) {
       if (size > 10) {client.rpop(image_owner+"_reactions");}
     });
@@ -75,20 +125,19 @@ exports.react = function(req, res, next) {
       if (size > 20) {client.rpop(image_id);}
       res.json({message: 'Reaction sent OK!'});        
     });
-
   });
 }
+// Legacy version of reactions
 exports.getReactions = function(req, res) {
   var image_id = req.params.id;
   client.lrange(image_id, 0, -1, function(err, reply) {
     res.json(reply);
   });
 }
-
-exports.getReactionList = function(req, res) {
-  var userId = req.user._id;
-  var reactions = [];
-  client.lrange(userId+"_reactions", 0, -1, function(err, reply) {
+// New version of reactions
+exports.getNewReactions = function(req, res) {
+  var image_id = req.params.id;
+  client.lrange(image_id+"_image_reactions", 0, -1, function(err, reply) {
     res.json(reply);
   });
 }
@@ -106,6 +155,14 @@ exports.getAll = function(req, res) {
     res.json(images);
   });
 }
+// soon to be legacy because of new function in usercontroller
+exports.getReactionList = function(req, res) {
+  var userId = req.user._id;
+  var reactions = [];
+  client.lrange(userId+"_reactions", 0, -1, function(err, reply) {
+    res.json(reply);
+  });
+}
 exports.getHash = function(req, res) {
   var string = "timestamp="+req.body.timestamp+cloudinary_vars.auth.split(':')[1];
   var shasum = crypto.createHash('sha1');
@@ -116,7 +173,6 @@ exports.delete = function(req, res) {
   var image_id = req.params.id;
   var userId = req.user._id;
   Image.remove({cloudinary_id: image_id }, function(err) {
-    client.rem(userId+"_reactions")
     if (err) next(err);
     res.json({message: "Image removed OK!"});
   });

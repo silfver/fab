@@ -48,6 +48,8 @@ router.route('/users')
     .get(authController.isAuthenticated, userController.getUsers);
 router.route('/image/reactions_list')
     .get(authController.isAuthenticated, imageController.getReactionList);
+router.route('/user/reactions_list')
+    .get(authController.isAuthenticated, userController.getReactionList);
 router.route('/image/unseen_reactions_number')
     .get(authController.isAuthenticated, imageController.getUnseenReactionsNumber);
 router.route('/user/following/')
@@ -58,6 +60,8 @@ router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
 router.route('/user/unseen_images')
     .get(authController.isAuthenticated, userController.getUnseenImages);
+router.route('/user/unseen_planet_images')
+    .get(authController.isAuthenticated, userController.getUnseenPlanetImages);
 router.route('/user/forgot_password')
     .post(userController.forgotPassword);
 router.route('/user/reset/:token')
@@ -94,8 +98,12 @@ router.route('/image/get_hash')
     .post(authController.isAuthenticated, imageController.getHash);
 router.route('/image/react')
     .post(authController.isAuthenticated, imageController.react);
+router.route('/v2/image/react')
+    .post(authController.isAuthenticated, imageController.react_v2);
 router.route('/image/reactions/:id')
     .get(authController.isAuthenticated, imageController.getReactions);
+router.route('/v2/image/reactions/:id')
+    .get(authController.isAuthenticated, imageController.getNewReactions);
 router.route('/image/:id')
     .delete(authController.isAuthenticated, imageController.delete);
 router.route('/images')
