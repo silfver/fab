@@ -32,7 +32,7 @@ exports.register = function(req, res, next) {
     Planet.findOne({_id: planet_id}, function(err, planet) {
       if(err) return next(err);
       planet.followers.forEach(function(follower){
-        if (follower !== null && (follower !== req.user._id)) {   // don't add to current users own queue
+        if (follower != req.user._id) {   // don't add to current users own queue
           client.lpush(follower+"_planet_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
             if (err) console.log(err); // silently fail and log here
           });          

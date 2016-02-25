@@ -100,11 +100,17 @@ exports.updateBackgroundImage = function(req, res, next) {
   });
 }
 exports.search = function(req, res, next) {
+  var total_return = [];
   var partial_username = req.params.username.toLowerCase();;
   var query = {username: new RegExp('^'+partial_username, 'i')};
-  User.find({$query: query, $orderby: { ranking : -1 }}, function(err, users) {
+  var planetQuery = {name: new RegExp(partial_username, 'i')};
+  User.find(query, function(err, users) {
     if(err) return next(err);
-    res.json(users);
+    Planet.find(planetQuery, function(err, planets) {
+      if(err) return next(err);
+      total_return = users.concat(planets);
+      res.json(total_return);
+    });  
   });
 }
 exports.getUnseenImages = function(req, res) {
