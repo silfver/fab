@@ -1,19 +1,43 @@
 var url = require('url');
 var fs = require('fs');
+var cloudinary = require('cloudinary');
 var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
 var crypto = require('crypto');
 var Image = require('../models/image');
 var User = require('../models/user');
 var Planet = require('../models/planet');
 var ObjectId = require('mongoose').Types.ObjectId;
+
+cloudinary.config({ 
+    cloud_name: cloudinary_vars.hostname, 
+    api_key: cloudinary_vars.auth.split(':')[0], 
+    api_secret: cloudinary_vars.auth.split(':')[1]
+});
+
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
   var client = require("redis").createClient(rtg.port, rtg.hostname);
   client.auth(rtg.auth.split(":")[1]);
-
 } else {
     var client = require("redis").createClient();
 }
+
+exports.deleteOld = function(req, res, next) {
+  var query = {};
+  var cloudinary_image_array = [];
+  Image.find({$query: query, $orderby: { $natural : 1 }}, function(err, images) {
+    images_to_delete = images.slice(1, 30);
+    images_to_delete.forEach(function(image){
+      Image.remove({"cloudinary_id": image.cloudinary_id}, function(err, images){
+      });
+      cloudinary_image_array.push(image.cloudinary_id);
+    });
+    cloudinary.api.delete_resources(cloudinary_image_array, function(result){
+      res.json(result);
+    });    
+  });
+}
+
 exports.register = function(req, res, next) {
   bump_ranking(req.user._id, 3);
   var users = JSON.parse(req.body.users);
@@ -50,6 +74,7 @@ exports.register = function(req, res, next) {
   client.lpush(req.user._id+"_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
     if (size > 10) {client.rpop(req.user_id+"_latest");}
   });
+
   image.save(function(err) {
     if (err) next(err);
     res.json({ message: 'Image registered OK' });
@@ -63,6 +88,7 @@ exports.getUnseenReactionsNumber = function(req, res, next) {
     res.json(reply);
   });
 }
+
 exports.get = function(req, res, next) {
   var image_id = req.params.id;
   Image.findOne({ cloudinary_id: image_id })

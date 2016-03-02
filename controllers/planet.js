@@ -37,15 +37,6 @@ exports.deletePlanet = function(req, res, next) {
   })
 };
 
-exports.search = function(req, res, next) {
-  var partial_username = req.params.username.toLowerCase();;
-  var query = {username: new RegExp('^'+partial_username, 'i')};
-  Planet.find(query, function(err, users) {
-    if(err) return next(err);
-    res.json(users);
-  });
-}
-
 exports.startFollowing = function(req, res, next) {
   var user_id = req.user._id;
   var planet_id = req.body.id;

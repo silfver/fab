@@ -6,12 +6,10 @@ var path = require('path');
 var http = require('http').Server(app);
 var url = require('url');
 var bodyParser = require('body-parser');
-var cloudinary = require('cloudinary');
 var cors = require('cors');
 var done = false;
 var mongoose = require('mongoose');
 var expressSession = require('express-session');
-var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
 var User = require('./models/user');
 var userController = require('./controllers/user');
 var authController = require('./controllers/auth');
@@ -28,18 +26,15 @@ app.use(cors());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-cloudinary.config({ 
-    cloud_name: cloudinary_vars.hostname, 
-    api_key: cloudinary_vars.auth.split(':')[0], 
-    api_secret: cloudinary_vars.auth.split(':')[1]
-});
-// cloudinary.api.delete_all_resources(function(result){});
+
 // generic error handling
 app.use(function(err, req, res, next) {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
 
+router.route('/admin/delete_old')
+    .delete(authController.isAuthenticated, imageController.deleteOld);
 router.route('/user/new')
     .post(userController.createNewUser);
 router.route('/user/checkname/:username')
