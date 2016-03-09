@@ -40,7 +40,7 @@ exports.deletePlanet = function(req, res, next) {
 exports.startFollowing = function(req, res, next) {
   var user_id = req.user._id;
   var planet_id = req.body.id;
-  Planet.update(
+  Planet.findByIdAndUpdate(
     planet_id,
     {$addToSet: {followers: user_id}},
     {safe: false, upsert: true},
