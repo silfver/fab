@@ -171,7 +171,7 @@ exports.getAvailableReactions = function(req, res) {
   fs.readFile('reactions.json', 'utf8', function (err, data) {
     if (err) next(err);
     available_reactions = JSON.parse(data);
-    var reactions = available_reactions[Math.floor(Math.random() * 22)];
+    var reactions = available_reactions[Math.floor(Math.random() * 41)];
     res.json(reactions);      
   })
 }
