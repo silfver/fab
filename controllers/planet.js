@@ -8,13 +8,14 @@ if (process.env.REDISTOGO_URL) {
 } else {
     var client = require("redis").createClient();
 }
-// Create endpoint /api/users for POST
+
 exports.createNewPlanet = function(req, res, next) {
   var planet = new Planet({
     name: req.body.name,
     description: req.body.description,
     image: req.body.image,
-    owner: req.user._id
+    owner: req.user._id,
+    followers: [req.user._id]
   });
   planet.save(function(err) {
     if(err) return next(err);
