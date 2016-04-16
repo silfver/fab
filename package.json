@@ -21,6 +21,7 @@
     "kue": "^0.9.3",
     "mongoose": "^4.0.5",
     "multer": "^0.1.8",
+    "node-gcm": "^0.14.0",
     "nodemailer": "^1.10.0",
     "nodemailer-mailgun-transport": "git://github.com/orliesaurus/nodemailer-mailgun-transport.git",
     "passport": "^0.2.2",

@@ -7,6 +7,10 @@ var Image = require('../models/image');
 var User = require('../models/user');
 var Planet = require('../models/planet');
 var ObjectId = require('mongoose').Types.ObjectId;
+var gcm = require('node-gcm');
+var message = new gcm.Message();
+var sender = new gcm.Sender(process.env.GCM_API_KEY);
+var registrationIds = [];
 
 cloudinary.config({ 
     cloud_name: cloudinary_vars.hostname, 
@@ -117,6 +121,17 @@ exports.react_v2 = function(req, res, next) {
     client.lpush(image_owner+"_reactions_v2", JSON.stringify([reaction_username, reaction_profile_picture, image_id, reaction_message, filter]), function(err, size) {
       if (size > 10) {client.rpop(image_owner+"_reactions_v2");}
     });
+    // Value the payload data to send...
+      message.addData('message',"\u270C Peace, Love \u2764 and PhoneGap \u2706!");
+      message.addData('title','Push Notification Sample' );
+      message.addData('msgcnt','3'); // Shows up in the notification in the status bar
+      //message.collapseKey = 'demo';
+      //message.delayWhileIdle = true; //Default is false
+      message.timeToLive = 3000;// Duration in seconds to hold in GCM and retry before timing out. Default 4 weeks (2,419,200 seconds) if not specified.
+       
+      // At least one reg id required
+      registrationIds.push('');
+       
     client.incr(image_owner+"_number_of_unseen_reactions");
     client.lpush(image_id+"_image_reactions", JSON.stringify([reaction_username, reaction_profile_picture, reaction_message]), function(err, size) {
       if (err) next(err);

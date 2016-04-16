@@ -29,6 +29,18 @@ exports.createNewUser = function(req, res, next) {
     res.json({ message: 'New user added' });
   });
 };
+exports.registerGcm = function(req, res, next) {
+  var userId = req.user._id;
+  var gcm_key = req.body.gcm_key;
+  console.log(gcm_key);
+  User.findByIdAndUpdate(userId, {
+    $set: {"gcm_key": gcm_key}
+  }, function(err, user) {
+    if(err) return next(err);
+    res.json({"message": "Gcm key registered!"});
+  });
+
+}
 exports.getMe = function(req, res, next) {
   var userId = req.user._id;
   User.findOne({_id: userId}, function(err, user) {
@@ -275,9 +287,9 @@ exports.invite = function(req, res, next) {
         nodemailerMailgun.sendMail({
         to: email,
         from: 'invite@worldoffab.com',
-        subject: user.username+' wants to invite you to World of Fab!',
+        subject: user.username+' wants to invite you to the World of Fab!',
         html: message+'\n\n' +
-          'Go to Google Play or App store and download the app to get started!\n\n'
+          'Go to https://worldoffab.com to get started\n\n'
         },
         function(err, info) {
           if (err) return next(err);

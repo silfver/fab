@@ -85,6 +85,8 @@ router.route('/user/stop_following/:id')
     .delete(authController.isAuthenticated, userController.stopFollowing);
 router.route('/users/search/:username')
     .get(authController.isAuthenticated, userController.search);
+router.route('/user/register_gcm')
+    .post(authController.isAuthenticated, userController.registerGcm);
 router.route('/image/register')
     .post(authController.isAuthenticated, imageController.register);
 router.route('/image/:id')
