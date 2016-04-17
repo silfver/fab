@@ -32,7 +32,6 @@ exports.createNewUser = function(req, res, next) {
 exports.registerGcm = function(req, res, next) {
   var userId = req.user._id;
   var gcm_key = req.body.gcm_key;
-  console.log(gcm_key);
   User.findByIdAndUpdate(userId, {
     $set: {"gcm_key": gcm_key}
   }, function(err, user) {
