@@ -78,7 +78,7 @@ exports.register = function(req, res, next) {
   });
   // send out to users!
   users.forEach(function(user) {
-    User.findOne({_id: user}, function(err, user)) {
+    User.findOne({_id: user}, function(err, user) {
       client.lpush(user._id+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
         if (err) console.log(err); // silently fail and log here
       });
