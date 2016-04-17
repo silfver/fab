@@ -8,9 +8,7 @@ var User = require('../models/user');
 var Planet = require('../models/planet');
 var ObjectId = require('mongoose').Types.ObjectId;
 var gcm = require('node-gcm');
-var message = new gcm.Message();
 var sender = new gcm.Sender(process.env.GCM_API_KEY);
-var registrationIds = [];
 
 cloudinary.config({ 
     cloud_name: cloudinary_vars.hostname, 
@@ -44,6 +42,7 @@ exports.deleteOld = function(req, res, next) {
 
 exports.register = function(req, res, next) {
   bump_ranking(req.user._id, 3);
+  var users_sent_to = 0;
   var users = JSON.parse(req.body.users);
   var planets = JSON.parse(req.body.planets);
   var image = new Image({
@@ -55,6 +54,15 @@ exports.register = function(req, res, next) {
     filter: req.body.filter,
     link: req.body.link
   });
+  // create message for push notification
+  var message = new gcm.Message();
+  var registrationIds = [];
+  message.addData('message',"you have a few fab!");
+  message.addData('title','OMG new fab!' );
+  message.addData('msgcnt','3');
+  message.addData('soundname','beep.wav'); 
+  message.timeToLive = 3000;
+
   // send out to the planets!
   planets.forEach(function(planet_id){
     Planet.findOne({_id: planet_id}, function(err, planet) {
@@ -73,6 +81,16 @@ exports.register = function(req, res, next) {
     client.lpush(user+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
       if (err) console.log(err); // silently fail and log here
     });
+    // If user has gcm_key they are on Android and accepts push notifications. Add to queue and let worker process do the rest
+    if (user.gcm_key) {
+      registrationIds.push(user.gcm_key);
+    }
+    if (users_sent_to == users.length) {
+      sender.send(message, registrationIds, 4, function (result) {
+        console.log(result);
+      });
+    }
+    users_sent_to++;
   });
   // add to users' own latest images
   client.lpush(req.user._id+"_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
@@ -121,17 +139,6 @@ exports.react_v2 = function(req, res, next) {
     client.lpush(image_owner+"_reactions_v2", JSON.stringify([reaction_username, reaction_profile_picture, image_id, reaction_message, filter]), function(err, size) {
       if (size > 10) {client.rpop(image_owner+"_reactions_v2");}
     });
-    // Value the payload data to send...
-      message.addData('message',"\u270C Peace, Love \u2764 and PhoneGap \u2706!");
-      message.addData('title','Push Notification Sample' );
-      message.addData('msgcnt','3'); // Shows up in the notification in the status bar
-      //message.collapseKey = 'demo';
-      //message.delayWhileIdle = true; //Default is false
-      message.timeToLive = 3000;// Duration in seconds to hold in GCM and retry before timing out. Default 4 weeks (2,419,200 seconds) if not specified.
-       
-      // At least one reg id required
-      registrationIds.push('');
-       
     client.incr(image_owner+"_number_of_unseen_reactions");
     client.lpush(image_id+"_image_reactions", JSON.stringify([reaction_username, reaction_profile_picture, reaction_message]), function(err, size) {
       if (err) next(err);
