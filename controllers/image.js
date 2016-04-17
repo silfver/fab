@@ -83,10 +83,11 @@ exports.register = function(req, res, next) {
         if (err) console.log(err); // silently fail and log here
       });
       // If user has gcm_key they are on Android and accepts push notifications. Add to queue and let worker process do the rest
-      if (user.gcm_key !== false) {
+      if (user.gcm_key) {
         registrationIds.push(user.gcm_key);
       }
       if (users_sent_to == users.length) {
+        console.log("ATTEMPTING TO SEND NOTIFICATION");
         sender.send(message, registrationIds, 4, function (result) {
           console.log(result);
         });
