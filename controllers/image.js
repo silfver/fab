@@ -88,7 +88,6 @@ exports.register = function(req, res, next) {
       }
       users_sent_to++;
       if (users_sent_to == users.length) {
-        console.log("ATTEMPTING TO SEND NOTIFICATION");
         sender.send(message, registrationIds, 4, function (result) {
           console.log(result);
         });
@@ -127,12 +126,28 @@ exports.react_v2 = function(req, res, next) {
   var image_id = req.body.cloudinary_id;
   var user_id = req.user._id;
   bump_ranking(user_id, 1);
+  // push notification
+  var message = new gcm.Message();
+  var registrationIds = [];
+  message.addData('message', reaction_username+" says "+reaction_message);
+  message.addData('title', reaction_username+" says "+reaction_message );
+  message.addData('msgcnt','3');
+  message.addData('soundname','beep.wav'); 
+  message.timeToLive = 3000;
   Image.findOne({cloudinary_id: image_id}, function(err, image) {
     var image_owner = image.by;
     var reaction_message = req.body.reaction_message;
     var reaction_username = req.body.username;
     var reaction_profile_picture = req.body.profile_picture;
     var filter = image.filter;
+    User.findOne({_id: image_owner}, function(user) {
+      if (user.gcm_key) {
+        registrationIds.push(user.gcm_key);
+        sender.send(message, registrationIds, 4, function (result) {
+          console.log(result);
+        });
+      }
+    });
     client.lrem(user_id+"_unseen", 0, JSON.stringify([image_id, image.filter]), function(err) {
       if(err) next(err);
     });
@@ -143,6 +158,7 @@ exports.react_v2 = function(req, res, next) {
       if (size > 10) {client.rpop(image_owner+"_reactions_v2");}
     });
     client.incr(image_owner+"_number_of_unseen_reactions");
+      // create message for push notification
     client.lpush(image_id+"_image_reactions", JSON.stringify([reaction_username, reaction_profile_picture, reaction_message]), function(err, size) {
       if (err) next(err);
       if (size > 20) {client.rpop(image_id);}
