@@ -126,7 +126,6 @@ exports.react_v2 = function(req, res, next) {
   var image_id = req.body.cloudinary_id;
   var user_id = req.user._id;
   bump_ranking(user_id, 1);
-  // push notification
   
   Image.findOne({cloudinary_id: image_id}, function(err, image) {
     var image_owner = image.by;
@@ -134,6 +133,7 @@ exports.react_v2 = function(req, res, next) {
     var reaction_username = req.body.username;
     var reaction_profile_picture = req.body.profile_picture;
     var filter = image.filter;
+    // push notification
     var message = new gcm.Message();
     var registrationIds = [];
     message.addData('message', reaction_username+" says "+reaction_message);
@@ -141,7 +141,7 @@ exports.react_v2 = function(req, res, next) {
     message.addData('msgcnt','3');
     message.addData('soundname','beep.wav'); 
     message.timeToLive = 3000;
-    User.findOne({_id: image_owner}, function(user) {
+    User.findOne({_id: image_owner}, function(err, user) {
       if (user.gcm_key) {
         registrationIds.push(user.gcm_key);
         sender.send(message, registrationIds, 4, function (result) {
