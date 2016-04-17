@@ -78,19 +78,21 @@ exports.register = function(req, res, next) {
   });
   // send out to users!
   users.forEach(function(user) {
-    client.lpush(user+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
-      if (err) console.log(err); // silently fail and log here
-    });
-    // If user has gcm_key they are on Android and accepts push notifications. Add to queue and let worker process do the rest
-    if (user.gcm_key !== false) {
-      registrationIds.push(user.gcm_key);
-    }
-    if (users_sent_to == users.length) {
-      sender.send(message, registrationIds, 4, function (result) {
-        console.log(result);
+    User.findOne({_id: user}, function(err, user)) {
+      client.lpush(user._id+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
+        if (err) console.log(err); // silently fail and log here
       });
-    }
-    users_sent_to++;
+      // If user has gcm_key they are on Android and accepts push notifications. Add to queue and let worker process do the rest
+      if (user.gcm_key !== false) {
+        registrationIds.push(user.gcm_key);
+      }
+      if (users_sent_to == users.length) {
+        sender.send(message, registrationIds, 4, function (result) {
+          console.log(result);
+        });
+      }
+      users_sent_to++;
+    });
   });
   // add to users' own latest images
   client.lpush(req.user._id+"_latest", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, size) {
