@@ -83,6 +83,7 @@ exports.register = function(req, res, next) {
         if (err) console.log(err); // silently fail and log here
       });
       // If user has gcm_key they are on Android and accepts push notifications. Add to queue and let worker process do the rest
+      console.log(user.gcm_key);
       if (user.gcm_key) {
         registrationIds.push(user.gcm_key);
       }
