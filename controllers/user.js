@@ -26,6 +26,14 @@ exports.createNewUser = function(req, res, next) {
   });
   user.save(function(err) {
     if(err) return next(err);
+    Planet.findByIdAndUpdate(
+      "56ec6fd366708a03003af7c7",
+      {$addToSet: {followers: user._id}},
+      {safe: false, upsert: true},
+      function(err, model) {
+        if(err) return next(err);
+      }
+    );
     res.json({ message: 'New user added' });
   });
 };

@@ -137,7 +137,7 @@ exports.react_v2 = function(req, res, next) {
     var message = new gcm.Message();
     var registrationIds = [];
     message.addData('message', reaction_username+" says "+reaction_message);
-    message.addData('title', reaction_username+" says "+reaction_message );
+    message.addData('title', "new reaction!");
     message.addData('msgcnt','3');
     message.addData('soundname','beep.wav'); 
     message.timeToLive = 3000;
