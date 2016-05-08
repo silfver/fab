@@ -19,7 +19,10 @@ var planetController = require('./controllers/planet');
 mongoose.connect(process.env.MONGOLAB_URI);
 var router = express.Router();
 
-app.use(expressSession({secret: 'process.env.EXPRESSECRETKEY'}));
+app.use(expressSession(
+    {secret: 'process.env.EXPRESSECRETKEY',
+    resave: true,
+    saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(cors());
 

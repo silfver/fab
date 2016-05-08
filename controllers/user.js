@@ -251,7 +251,7 @@ exports.forgotPassword = function(req, res, next) {
           subject: 'Reset your Fab! password',
           html: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
             'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-            '<a href="fab://reset/' + token + '">fab://reset/' + token + '</a>\n\n' +
+            '<a href="http://worldoffab.com/reset_password.html?' + token + '">https://worldoffab.com/reset_password.html?' + token +'</a>\n\n' +
             'If you did not request this, please ignore this email and your password will remain unchanged.\n'
         },
         function(err, info) {
