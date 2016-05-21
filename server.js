@@ -54,6 +54,10 @@ router.route('/user/following/')
     .get(authController.isAuthenticated, userController.getFollowing);  
 router.route('/user/followers/')
     .get(authController.isAuthenticated, userController.getFollowers);  
+router.route('/other_user/followers/:id')
+    .get(authController.isAuthenticated, userController.getOtherFollowers);  
+router.route('/other_user/following/:id')
+    .get(authController.isAuthenticated, userController.getOtherFollowing);  
 router.route('/user/me')
     .get(authController.isAuthenticated, userController.getMe);
 router.route('/user/unseen_images')
@@ -104,6 +108,7 @@ router.route('/image/reactions/:id')
     .get(authController.isAuthenticated, imageController.getReactions);
 router.route('/v2/image/reactions/:id')
     .get(authController.isAuthenticated, imageController.getNewReactions);
+    // about to be deprecated, is out of current version
 router.route('/image/:id')
     .delete(authController.isAuthenticated, imageController.delete);
 router.route('/images')

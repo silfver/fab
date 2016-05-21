@@ -50,10 +50,12 @@ exports.registerGcm = function(req, res, next) {
 }
 exports.getMe = function(req, res, next) {
   var userId = req.user._id;
-  User.findOne({_id: userId}, function(err, user) {
-    if(err) return next(err);
-    res.json(user);
-  })
+  User.findOne({ _id: userId })
+  .populate('friends')
+  .exec(function (err, user) {
+    if (err) next(err);
+    res.json(user)
+  });
 };
 exports.checkUsernameAvailable = function(req, res, next) {
   var username = req.params.username;
@@ -187,6 +189,7 @@ exports.getFollowing = function(req, res, next) {
     res.json(following);
   })
 }
+// below to be deprecated in favour of all data sent at getMe()
 exports.getFollowers = function(req, res, next) {
   var user_id = req.user._id;
   User.findOne({ _id: user_id })
@@ -196,6 +199,24 @@ exports.getFollowers = function(req, res, next) {
     res.json(user)
   });
 }
+exports.getOtherFollowing = function(req, res, next) {
+  var userId = req.params.id;
+  User.find({friends: userId}, function(err, following) {
+    if(err) return next(err);
+    res.json(following);
+  })
+}
+// below to be deprecated in favour of all data sent at getMe()
+exports.getOtherFollowers = function(req, res, next) {
+  var userId = req.params.id;
+  User.findOne({ _id: userId })
+  .populate('friends')
+  .exec(function (err, user) {
+    if (err) next(err);
+    res.json(user)
+  });
+}
+
 exports.getReactionList = function(req, res) {
   var userId = req.user._id;
   var reactions = [];
