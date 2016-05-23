@@ -111,6 +111,8 @@ router.route('/v2/image/reactions/:id')
     // about to be deprecated, is out of current version
 router.route('/image/:id')
     .delete(authController.isAuthenticated, imageController.delete);
+router.route('/image/report/')
+    .post(authController.isAuthenticated, imageController.report);
 router.route('/images')
     .get(authController.isAuthenticated, imageController.getAll);
 router.route('/reactions')

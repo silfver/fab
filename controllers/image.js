@@ -122,6 +122,17 @@ exports.get = function(req, res, next) {
     res.json(image);
   });
 }
+exports.report = function(req, res, next) {
+  var image_id = req.body.cloudinary_id;
+  var user_id = req.user._id;
+  Image.findOne({ cloudinary_id: image_id }, function(err, image) {
+    if(err) next(err);
+    client.lrem(user_id+"_unseen", 0, JSON.stringify([image_id, image.filter]), function(err) {
+      if(err) next(err);
+      res.json({message: 'Image reported!'});
+    });
+  });
+}
 exports.react_v2 = function(req, res, next) {
   var image_id = req.body.cloudinary_id;
   var user_id = req.user._id;
