@@ -173,7 +173,7 @@ exports.startFollowing = function(req, res, next) {
   User.find({_id: friend_id, blocked: user_id}).lean().exec(function(err, friend) {
     if(err) return next(err);
     if (friend.length > 0) {
-      res.json({message: user_id+" is blocked by"+friend.username});
+      res.sendStatus(401); // user is blocked from stalking
     }
     else {
       User.findByIdAndUpdate(
