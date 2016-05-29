@@ -90,6 +90,10 @@ router.route('/user/remove_follower/:id')
     .delete(authController.isAuthenticated, userController.deleteFollower);
 router.route('/user/stop_following/:id')
     .delete(authController.isAuthenticated, userController.stopFollowing);
+router.route('/user/block/:id')
+    .put(authController.isAuthenticated, userController.block);
+router.route('/user/unblock/:id')
+    .put(authController.isAuthenticated, userController.unblock);    
 router.route('/users/search/:username')
     .get(authController.isAuthenticated, userController.search);
 router.route('/user/register_gcm')

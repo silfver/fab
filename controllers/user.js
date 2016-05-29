@@ -4,6 +4,7 @@ var Planet = require('../models/planet');
 var nodemailer = require('nodemailer');
 var mg = require('nodemailer-mailgun-transport');
 var crypto = require('crypto');
+var _ = require('lodash');
 
 if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
@@ -169,18 +170,55 @@ exports.getNewFollowers = function(req, res) {
 exports.startFollowing = function(req, res, next) {
   var user_id = req.user._id;
   var friend_id = req.body.friend;
-  User.findByIdAndUpdate(
-    friend_id,
-    {$addToSet: {friends: user_id}},
-    {safe: false, upsert: true},
-    function(err, model) {
-      if(err) return next(err);
-      client.lpush(friend_id+"_new_friends", user_id, function(err, reply) {
-        if(err) return next(err);
-        res.json({message: 'Started following OK!'});
-      });    
+  User.find({_id: friend_id, blocked: user_id}).lean().exec(function(err, friend) {
+    if(err) return next(err);
+    if (friend.length > 0) {
+      res.json({message: user_id+" is blocked by"+friend.username});
     }
-  );
+    else {
+      User.findByIdAndUpdate(
+        friend_id,
+        {$addToSet: {friends: user_id}},
+        {safe: false, upsert: true},
+        function(err, model) {
+          if(err) return next(err);
+          client.lpush(friend_id+"_new_friends", user_id, function(err, reply) {
+            if(err) return next(err);
+            res.json({message: 'Started following OK!'});
+          });    
+        }
+      );
+    }
+  });
+}
+exports.block = function(req, res, next) {
+  var user_id = req.user._id;
+  var user_to_block = req.params.id;
+  User.findByIdAndUpdate(user_id,
+      {$addToSet: {blocked: user_to_block}},
+      {safe: false, upsert: true},
+      function(err, model) {
+        if(err) return next(err);
+        User.findByIdAndUpdate(user_id, 
+        {$pull: {friends: user_to_block}},
+          function(err, model) {
+            if (err) return next(err);
+            res.json({message: 'User blocked!'});
+          }
+        );
+      }
+    );
+}
+exports.unblock = function(req, res, next) {
+  var user_id = req.user._id;
+  var user_to_unblock = req.params.id;
+  User.findByIdAndUpdate(user_id,
+      {$pull: {blocked: user_to_unblock}},
+      function(err, model) {
+        if(err) return next(err);
+        res.json({message: 'User unblocked!'});
+      }
+    );
 }
 exports.getFollowing = function(req, res, next) {
   var user_id = req.user._id;
@@ -232,6 +270,7 @@ exports.getPlanets = function(req, res, next) {
     res.json(planets)
   });
 }
+// TODO remove later... 
 exports.getUsers = function(req, res, next) {
   User.find(function(err, users) {
     if(err) return next(err);
