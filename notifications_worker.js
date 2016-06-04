@@ -13,7 +13,7 @@ message.addData('msgcnt','3'); // Shows up in the notification in the status bar
 message.timeToLive = 3000;// Duration in seconds to hold in GCM and retry before timing out. Default 4 weeks (2,419,200 seconds) if not specified.
  
 // At least one reg id required
-registrationIds.push("mJREIlCmVNo:APA91bGimIPgKq7VRob0OyIRNRzp_C1gzsmMW3FMx6K-batXS9y2u_CMY2kDj3bto9KCkLwRzgNr7mDk-fKbvCCgD8aG2n_-ylqkAdaWMoYzx-H7meRAo5YX_v7ria8e0TMHTVVxy614");
+registrationIds.push("lWnKdKLDVu4:APA91bEJb4SOobRoC9joasc4GFWBjXEpmRa7Knv1OOsLfm865EmV2HrFyd5oEXoI2Fi0o_Woxrha81gNgjeQscruSRrmewHdsBx5QEK_3gCFtcIJm9Ll-V8htSvyCIr1RrhBOYpUbPXR");
 
 /**
  * Parameters: message-literal, registrationIds-array, No. of retries, callback-function

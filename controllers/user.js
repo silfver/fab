@@ -20,6 +20,7 @@ exports.createNewUser = function(req, res, next) {
     password: req.body.password,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
+    gender: req.body.gender,
     ranking: 0,
     postal_no: req.body.postal_no,
     profile_picture: req.body.profile_picture,

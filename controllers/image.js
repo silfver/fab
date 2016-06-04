@@ -1,5 +1,6 @@
 var url = require('url');
 var fs = require('fs');
+var async = require('async');
 var cloudinary = require('cloudinary');
 var cloudinary_vars = url.parse(process.env.CLOUDINARY_URL);
 var crypto = require('crypto');
@@ -60,7 +61,6 @@ exports.register = function(req, res, next) {
   message.addData('message',"you have a few fab!");
   message.addData('title','OMG new fab!' );
   message.addData('msgcnt','3');
-  message.addData('soundname','beep.wav'); 
   message.timeToLive = 3000;
 
   // send out to the planets!
@@ -82,7 +82,7 @@ exports.register = function(req, res, next) {
       client.lpush(user._id+"_unseen", JSON.stringify([req.body.cloudinary_id, req.body.filter]), function(err, reply) {
         if (err) console.log(err); // silently fail and log here
       });
-      // If user has gcm_key they are on Android and accepts push notifications. Add to queue and let worker process do the rest
+      // If user has gcm_key they accept push notifications. Add to queue and let worker process do the rest
       if (user.gcm_key) {
         registrationIds.push(user.gcm_key);
       }
